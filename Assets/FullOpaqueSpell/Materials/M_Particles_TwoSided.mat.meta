@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 47cd7d3c9a404b0b98593122858b9f09
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315345
+  packageName: 61 Full Opaque Spells Pack
+  packageVersion: 1.0
+  assetPath: Assets/FullOpaqueSpell/Materials/M_Particles_TwoSided.mat
+  uploadId: 811758

@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: e77e339d740b41dd92a8c1ea3e8c97f7
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 625f186215c104763be7675aa2d941aa, type: 3}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315345
+  packageName: 61 Full Opaque Spells Pack
+  packageVersion: 1.0
+  assetPath: Assets/FullOpaqueSpell/Shader/S_Particle_Lit.shadergraph
+  uploadId: 811758

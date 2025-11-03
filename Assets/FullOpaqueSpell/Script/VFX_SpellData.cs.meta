@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 6cfbc1f7a4414f4cae26c3a0bd7e8b2a
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315345
+  packageName: 61 Full Opaque Spells Pack
+  packageVersion: 1.0
+  assetPath: Assets/FullOpaqueSpell/Script/VFX_SpellData.cs
+  uploadId: 811758

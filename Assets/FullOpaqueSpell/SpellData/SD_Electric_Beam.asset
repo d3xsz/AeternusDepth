@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cfbc1f7a4414f4cae26c3a0bd7e8b2a, type: 3}
+  m_Name: SD_Electric_Beam
+  m_EditorClassIdentifier: 
+  spellName: Electric_Beam
+  incantationPrefab: {fileID: 2905666689437318915, guid: 4768141875174f91b87ba0d53922fcae,
+    type: 3}
+  spellBurstPrefab: {fileID: 7248386473986964264, guid: 49a62d3927f84d66bca6836eeff3e428,
+    type: 3}
+  mainSpellPrefab: {fileID: 6216075307111844637, guid: cf7053d8789c444b8b15103fa387a8f4,
+    type: 3}
+  castTime: 1
+  cooldown: 1
+  activationKey: 101
+  shakeEnabled: 1
+  shakeStrengthIncantation: 0.01
+  shakeStrengthBurst: 0.02
+  shakeStrengthImpact: 0.05
+  shakeDurationIncantation: 1
+  shakeDurationBurst: 1
+  shakeDurationImpact: 0
+  spellColor: {r: 1, g: 0.6666667, b: 0, a: 1}
+  spellTargetBehavior: 2
+  spellTracking: 0
+  spawnOnGround: 0

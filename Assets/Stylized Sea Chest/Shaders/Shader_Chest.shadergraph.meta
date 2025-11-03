@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 0d49c513e622aac40877b42ae51a909c
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 625f186215c104763be7675aa2d941aa, type: 3}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 289856
+  packageName: Stylized Sea Chest
+  packageVersion: 1.0
+  assetPath: Assets/Stylized Sea Chest/Shaders/Shader_Chest.shadergraph
+  uploadId: 677286

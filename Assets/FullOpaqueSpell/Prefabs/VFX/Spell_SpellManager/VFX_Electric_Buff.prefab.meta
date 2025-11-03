@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d47d4dddb89049599ad3fcb1bb7c7e12
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315345
+  packageName: 61 Full Opaque Spells Pack
+  packageVersion: 1.0
+  assetPath: Assets/FullOpaqueSpell/Prefabs/VFX/Spell_SpellManager/VFX_Electric_Buff.prefab
+  uploadId: 811758
