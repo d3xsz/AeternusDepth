@@ -6276,10 +6276,10 @@ MonoBehaviour:
     spawnCount: 1
     spawnedCount: 0
   - characterPrefab: {fileID: 6019469948472588117, guid: 91557b5b0e940ee4bb8c21af938a84da, type: 3}
-    spawnCount: 2
+    spawnCount: 0
     spawnedCount: 0
   - characterPrefab: {fileID: 7548551295643585532, guid: 87366a4f171f6c7448ac8d3dc0fc543c, type: 3}
-    spawnCount: 2
+    spawnCount: 0
     spawnedCount: 0
   roomRadius: 24.6
   showGizmos: 1
@@ -8832,13 +8832,13 @@ MonoBehaviour:
   useCustomSpawnSettings: 1
   roomSpecificSpawns:
   - characterPrefab: {fileID: 7422990900323949785, guid: 48a41a383aac83848bac90fc0c45beda, type: 3}
-    spawnCount: 2
+    spawnCount: 0
     spawnedCount: 0
   - characterPrefab: {fileID: 9171181611488682550, guid: 385048795f962d644a4f76b6ccfdba62, type: 3}
-    spawnCount: 1
+    spawnCount: 0
     spawnedCount: 0
   - characterPrefab: {fileID: 6019469948472588117, guid: 91557b5b0e940ee4bb8c21af938a84da, type: 3}
-    spawnCount: 2
+    spawnCount: 1
     spawnedCount: 0
   roomRadius: 24.6
   showGizmos: 1
@@ -9801,10 +9801,10 @@ MonoBehaviour:
     spawnCount: 1
     spawnedCount: 0
   - characterPrefab: {fileID: 7422990900323949785, guid: 48a41a383aac83848bac90fc0c45beda, type: 3}
-    spawnCount: 2
+    spawnCount: 0
     spawnedCount: 0
   - characterPrefab: {fileID: 7548551295643585532, guid: 87366a4f171f6c7448ac8d3dc0fc543c, type: 3}
-    spawnCount: 2
+    spawnCount: 0
     spawnedCount: 0
   roomRadius: 24.6
   showGizmos: 1
@@ -11423,7 +11423,7 @@ MonoBehaviour:
     spawnCount: 1
     spawnedCount: 0
   - characterPrefab: {fileID: 7422990900323949785, guid: 48a41a383aac83848bac90fc0c45beda, type: 3}
-    spawnCount: 2
+    spawnCount: 0
     spawnedCount: 0
   - characterPrefab: {fileID: 9171181611488682550, guid: 385048795f962d644a4f76b6ccfdba62, type: 3}
     spawnCount: 0
@@ -24221,13 +24221,13 @@ MonoBehaviour:
   useCustomSpawnSettings: 1
   roomSpecificSpawns:
   - characterPrefab: {fileID: 9171181611488682550, guid: 385048795f962d644a4f76b6ccfdba62, type: 3}
-    spawnCount: 1
+    spawnCount: 0
     spawnedCount: 0
   - characterPrefab: {fileID: 7548551295643585532, guid: 87366a4f171f6c7448ac8d3dc0fc543c, type: 3}
     spawnCount: 1
     spawnedCount: 0
   - characterPrefab: {fileID: 7422990900323949785, guid: 48a41a383aac83848bac90fc0c45beda, type: 3}
-    spawnCount: 1
+    spawnCount: 0
     spawnedCount: 0
   roomRadius: 20.1
   showGizmos: 1
@@ -25888,13 +25888,13 @@ MonoBehaviour:
   useCustomSpawnSettings: 1
   roomSpecificSpawns:
   - characterPrefab: {fileID: 9171181611488682550, guid: 385048795f962d644a4f76b6ccfdba62, type: 3}
-    spawnCount: 2
+    spawnCount: 0
     spawnedCount: 0
   - characterPrefab: {fileID: 7548551295643585532, guid: 87366a4f171f6c7448ac8d3dc0fc543c, type: 3}
     spawnCount: 1
     spawnedCount: 0
   - characterPrefab: {fileID: 7422990900323949785, guid: 48a41a383aac83848bac90fc0c45beda, type: 3}
-    spawnCount: 1
+    spawnCount: 0
     spawnedCount: 0
   roomRadius: 20.4
   showGizmos: 1
@@ -34974,13 +34974,13 @@ MonoBehaviour:
   useCustomSpawnSettings: 1
   roomSpecificSpawns:
   - characterPrefab: {fileID: 9171181611488682550, guid: 385048795f962d644a4f76b6ccfdba62, type: 3}
-    spawnCount: 2
+    spawnCount: 0
     spawnedCount: 0
   - characterPrefab: {fileID: 7422990900323949785, guid: 48a41a383aac83848bac90fc0c45beda, type: 3}
     spawnCount: 1
     spawnedCount: 0
   - characterPrefab: {fileID: 6019469948472588117, guid: 91557b5b0e940ee4bb8c21af938a84da, type: 3}
-    spawnCount: 2
+    spawnCount: 0
     spawnedCount: 0
   roomRadius: 24.6
   showGizmos: 1
@@ -47886,13 +47886,13 @@ MonoBehaviour:
   useCustomSpawnSettings: 1
   roomSpecificSpawns:
   - characterPrefab: {fileID: 9171181611488682550, guid: 385048795f962d644a4f76b6ccfdba62, type: 3}
-    spawnCount: 2
+    spawnCount: 0
     spawnedCount: 0
   - characterPrefab: {fileID: 7548551295643585532, guid: 87366a4f171f6c7448ac8d3dc0fc543c, type: 3}
     spawnCount: 1
     spawnedCount: 0
   - characterPrefab: {fileID: 7422990900323949785, guid: 48a41a383aac83848bac90fc0c45beda, type: 3}
-    spawnCount: 1
+    spawnCount: 0
     spawnedCount: 0
   roomRadius: 24.6
   showGizmos: 1
@@ -51164,7 +51164,7 @@ MonoBehaviour:
   useCustomSpawnSettings: 1
   roomSpecificSpawns:
   - characterPrefab: {fileID: 7548551295643585532, guid: 87366a4f171f6c7448ac8d3dc0fc543c, type: 3}
-    spawnCount: 2
+    spawnCount: 1
     spawnedCount: 0
   - characterPrefab: {fileID: 6019469948472588117, guid: 91557b5b0e940ee4bb8c21af938a84da, type: 3}
     spawnCount: 0
