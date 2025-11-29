@@ -244,7 +244,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 30
-  deathEffect: {fileID: 0}
+  deathEffect: {fileID: 8417487106585176464, guid: b357ec4e1c374ef9a8e33d3f11a1827d, type: 3}
   chestPrefab: {fileID: 0}
   chestDropChance: 0
   guaranteedDrop: 0

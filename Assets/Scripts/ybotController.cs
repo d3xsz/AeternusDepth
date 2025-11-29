@@ -103,11 +103,8 @@ public class ybotController : MonoBehaviour
             }
         }
 
-        // ESC tuşu kontrolü - sadece oyun sahnelerinde
-        if (Keyboard.current.escapeKey.wasPressedThisFrame && SceneManager.GetActiveScene().name != "MainMenu")
-        {
-            ToggleCursor();
-        }
+        
+       
     }
 
     // === REWARD SİSTEM İÇİN EKLENEN METOD ===
