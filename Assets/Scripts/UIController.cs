@@ -1,227 +1,112 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
-public class UIController : MonoBehaviour
+public class HoverEnergyUI : MonoBehaviour
 {
-    [Header("Hover Energy UI")]
-    public Slider hoverEnergySlider;
-    public Image hoverEnergyFill;
-    public GameObject hoverEnergyPanel;
-    public Text hoverEnergyText;
-
-    [Header("Colors")]
-    public Color fullEnergyColor = Color.green;
-    public Color mediumEnergyColor = Color.yellow;
-    public Color lowEnergyColor = Color.red;
-
-    [Header("References")]
+    [Header("Hover Bar")]
+    public Image hoverFillImage;  // TEK GEREKLİ REFERANS
     public ybotController playerController;
 
-    [Header("UI Visibility")]
-    public bool autoHideUI = true; // Otomatik gizleme açık
+    [Header("Colors")]
+    public Color fullColor = Color.green;
+    public Color mediumColor = Color.yellow;
+    public Color lowColor = Color.red;
 
-    private CanvasGroup hoverCanvasGroup;
+    private CanvasGroup canvasGroup;
+    private float currentFill = 1f;
 
-    private void Start()
+    void Start()
     {
-        // CanvasGroup oluştur veya bul
-        if (hoverEnergyPanel != null)
+        // CanvasGroup ekle
+        if (TryGetComponent<CanvasGroup>(out canvasGroup) == false)
         {
-            hoverCanvasGroup = hoverEnergyPanel.GetComponent<CanvasGroup>();
-            if (hoverCanvasGroup == null)
-            {
-                hoverCanvasGroup = hoverEnergyPanel.AddComponent<CanvasGroup>();
-            }
-
-            hoverEnergyPanel.SetActive(true);
-            hoverCanvasGroup.alpha = 1f;
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
 
-        if (playerController == null)
-            playerController = FindObjectOfType<ybotController>();
+        // PlayerController'ı bul
+        FindPlayer();
     }
 
-    private void Update()
+    void Update()
     {
-        if (playerController != null)
-        {
-            UpdateHoverEnergyUI();
-        }
+        if (playerController == null) return;
+        if (hoverFillImage == null) return;
+
+        // Enerji yüzdesini al
+        float energyPercent = playerController.GetHoverEnergyPercentage();
+
+        // Fill miktarını güncelle (smooth)
+        currentFill = Mathf.Lerp(currentFill, energyPercent, Time.deltaTime * 5f);
+        hoverFillImage.fillAmount = currentFill;
+
+        // Renk güncelle
+        UpdateColor(energyPercent);
 
         // Görünürlük kontrolü
-        if (autoHideUI)
-        {
-            UpdateHoverUIVisibility();
-        }
+        UpdateVisibility();
     }
 
-    // HealthBarUI'dakiyle AYNI görünürlük kontrolü
-    private void UpdateHoverUIVisibility()
+    void UpdateColor(float percent)
     {
-        if (hoverCanvasGroup == null) return;
+        if (percent > 0.5f)
+            hoverFillImage.color = fullColor;
+        else if (percent > 0.2f)
+            hoverFillImage.color = mediumColor;
+        else
+            hoverFillImage.color = lowColor;
+
+        // Hover modunda değilken şeffaflık
+        float alpha = playerController.IsHovering() ? 1f : 0.7f;
+        hoverFillImage.color = new Color(
+            hoverFillImage.color.r,
+            hoverFillImage.color.g,
+            hoverFillImage.color.b,
+            alpha
+        );
+    }
+
+    void UpdateVisibility()
+    {
+        if (canvasGroup == null) return;
 
         bool shouldHide = false;
 
-        // 1. ESC menü kontrolü
+        // ESC menü
         ESCMenu escMenu = FindObjectOfType<ESCMenu>();
         if (escMenu != null && escMenu.isMenuOpen)
-        {
             shouldHide = true;
-        }
 
-        // 2. Diyalog kontrolü
+        // Diyalog
         SeamanDialogue dialogue = FindObjectOfType<SeamanDialogue>();
         if (dialogue != null && dialogue.isDialogueActive)
-        {
             shouldHide = true;
-        }
 
-        // 3. Ölüm ekranı kontrolü
+        // Ölüm ekranı
         DeathScreenUI deathScreen = FindObjectOfType<DeathScreenUI>();
         if (deathScreen != null && deathScreen.deathPanel != null && deathScreen.deathPanel.activeInHierarchy)
-        {
             shouldHide = true;
-        }
 
-        // 4. Puzzle kontrolü
+        // Puzzle
         Door6PuzzleController puzzle = FindObjectOfType<Door6PuzzleController>();
         if (puzzle != null && puzzle.IsPuzzleUIOpen)
-        {
             shouldHide = true;
-        }
 
-        // Görünürlüğü ayarla (HealthBarUI ile AYNI mantık)
-        hoverCanvasGroup.alpha = shouldHide ? 0f : 1f;
-        hoverCanvasGroup.interactable = !shouldHide;
-        hoverCanvasGroup.blocksRaycasts = !shouldHide;
-
-        // DEBUG: Kontrol etmek için
-        if (shouldHide && Time.frameCount % 120 == 0)
-        {
-            Debug.Log("⚠️ HoverUI gizlendi - Neden: " + GetHideReason());
-        }
+        // Görünürlüğü ayarla
+        canvasGroup.alpha = shouldHide ? 0f : 1f;
     }
 
-    // DEBUG: Neden gizlendiğini görmek için
-    private string GetHideReason()
+    void FindPlayer()
     {
-        ESCMenu escMenu = FindObjectOfType<ESCMenu>();
-        if (escMenu != null && escMenu.isMenuOpen) return "ESC Menu";
-
-        SeamanDialogue dialogue = FindObjectOfType<SeamanDialogue>();
-        if (dialogue != null && dialogue.isDialogueActive) return "Seaman Dialogue";
-
-        DeathScreenUI deathScreen = FindObjectOfType<DeathScreenUI>();
-        if (deathScreen != null && deathScreen.deathPanel != null && deathScreen.deathPanel.activeInHierarchy) return "Death Screen";
-
-        Door6PuzzleController puzzle = FindObjectOfType<Door6PuzzleController>();
-        if (puzzle != null && puzzle.IsPuzzleUIOpen) return "Puzzle UI";
-
-        return "Unknown";
-    }
-
-    private void UpdateHoverEnergyUI()
-    {
-        // Eğer UI gizliyse, güncelleme yapma
-        if (hoverCanvasGroup != null && hoverCanvasGroup.alpha <= 0.1f)
-            return;
-
-        // Enerji yüzdesini al
-        float energyPercentage = playerController.GetHoverEnergyPercentage();
-        bool isHovering = playerController.IsHovering();
-
-        // Slider'ı güncelle
-        if (hoverEnergySlider != null)
+        playerController = FindObjectOfType<ybotController>();
+        if (playerController == null)
         {
-            hoverEnergySlider.value = energyPercentage;
-
-            // Renk güncelle
-            if (hoverEnergyFill != null)
-            {
-                if (energyPercentage > 0.5f)
-                    hoverEnergyFill.color = fullEnergyColor;
-                else if (energyPercentage > 0.2f)
-                    hoverEnergyFill.color = mediumEnergyColor;
-                else
-                    hoverEnergyFill.color = lowEnergyColor;
-            }
-        }
-
-        // Text'i güncelle
-        if (hoverEnergyText != null)
-        {
-            hoverEnergyText.text = $"Hover: {Mathf.RoundToInt(energyPercentage * 100)}%";
-
-            // Hover modunda değilken gri yap
-            if (!isHovering && energyPercentage < 100)
-            {
-                hoverEnergyText.color = Color.gray;
-            }
-            else if (isHovering)
-            {
-                hoverEnergyText.color = Color.cyan;
-            }
-            else
-            {
-                hoverEnergyText.color = Color.white;
-            }
-        }
-
-        // Hover modunda iken UI'ı daha görünür yap
-        if (hoverEnergyPanel != null && hoverEnergyFill != null)
-        {
-            if (isHovering)
-            {
-                hoverEnergyFill.GetComponent<Image>().color = new Color(
-                    hoverEnergyFill.color.r,
-                    hoverEnergyFill.color.g,
-                    hoverEnergyFill.color.b,
-                    1f
-                );
-            }
-            else
-            {
-                hoverEnergyFill.GetComponent<Image>().color = new Color(
-                    hoverEnergyFill.color.r,
-                    hoverEnergyFill.color.g,
-                    hoverEnergyFill.color.b,
-                    0.7f
-                );
-            }
+            Invoke("FindPlayer", 1f);
         }
     }
 
-    // Manuel kontrol için metodlar
-    public void ShowHoverUI()
-    {
-        if (hoverCanvasGroup != null)
-        {
-            hoverCanvasGroup.alpha = 1f;
-            hoverCanvasGroup.interactable = true;
-            hoverCanvasGroup.blocksRaycasts = true;
-        }
-    }
-
-    public void HideHoverUI()
-    {
-        if (hoverCanvasGroup != null)
-        {
-            hoverCanvasGroup.alpha = 0f;
-            hoverCanvasGroup.interactable = false;
-            hoverCanvasGroup.blocksRaycasts = false;
-        }
-    }
-
-    // Enerji yenilenirken yanıp sönme efekti
-    public void FlashEnergyBar()
-    {
-        // Animasyon eklemek için burayı genişletebilirsin
-        // Örneğin: StartCoroutine(FlashCoroutine());
-    }
-
-    // Sahne değişiminde DontDestroyOnLoad için
-    private static UIController instance;
+    // Scene değişikliği
+    private static HoverEnergyUI instance;
     void Awake()
     {
         if (instance == null)
@@ -247,14 +132,8 @@ public class UIController : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Yeni sahneye geçince playerController'ı tekrar bul
-        if (playerController == null)
-            playerController = FindObjectOfType<ybotController>();
-
-        // UI'ı göster
-        ShowHoverUI();
+        FindPlayer();
+        if (canvasGroup != null)
+            canvasGroup.alpha = 1f;
     }
 }
-
-// SceneManager için using eklemeyi unutma!
-// Eğer yoksa en üste ekle: using UnityEngine.SceneManagement;

@@ -8,395 +8,235 @@ using UnityEngine.EventSystems;
 
 public class MainMenuManager : MonoBehaviour
 {
-    [Header("UI References")]
+    [Header("Main Menu UI")]
     public Button startButton;
     public Button settingsButton;
     public Button creditsButton;
     public Button exitButton;
     public TextMeshProUGUI gameTitleText;
 
-    [Header("Credits Panel")]
-    public GameObject creditsPanel;
-    public TextMeshProUGUI creditsText;
-    public Button closeCreditsButton;
+    [Header("Credits")]
+    public GameObject creditsPanel; // Tam ekran siyah panel
+    public TextMeshProUGUI creditsText; // Kayacak olan yazı
     public float scrollSpeed = 30f;
 
-    [Header("Scene Names")]
-    public string gameSceneName = "SampleScene";
+    [Header("Scene Settings")]
+    public string gameSceneName = "GameScene";
 
     [Header("Audio")]
     public AudioClip buttonClickSound;
-    public AudioClip buttonHoverSound; // YENİ: Üzerine gelme sesi
+    public AudioClip buttonHoverSound;
     private AudioSource audioSource;
 
-    [Header("Button Animation Settings")]
-    public float hoverScaleAmount = 1.1f;
-    public float animationSpeed = 15f;
-
-    [Header("Title Animation")]
-    public float titleFloatSpeed = 1.5f;
-    public float titleFloatAmount = 20f;
-
-    private Coroutine creditsCoroutine;
-    private Dictionary<Button, Vector3> buttonOriginalScales = new Dictionary<Button, Vector3>();
-    private HashSet<Button> hoveredButtons = new HashSet<Button>(); // YENİ: Hover kontrolü
+    [Header("Button Effects")]
+    public float hoverScale = 1.1f;
+    private Dictionary<Button, Vector3> originalButtonScales = new Dictionary<Button, Vector3>();
+    private bool isCreditsActive = false;
 
     void Start()
     {
+        // Audio
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
 
-        if (startButton != null)
-        {
-            startButton.onClick.AddListener(StartGame);
-            AddButtonSound(startButton);
-        }
+        // Buton ayarları
+        if (startButton != null) startButton.onClick.AddListener(StartGame);
+        if (settingsButton != null) settingsButton.onClick.AddListener(OpenSettings);
+        if (creditsButton != null) creditsButton.onClick.AddListener(OpenCredits);
+        if (exitButton != null) exitButton.onClick.AddListener(ExitGame);
 
-        if (settingsButton != null)
-        {
-            settingsButton.onClick.AddListener(OpenSettings);
-            AddButtonSound(settingsButton);
-        }
+        // Hover efektleri
+        SetupButtonHoverEffects();
 
-        if (creditsButton != null)
-        {
-            creditsButton.onClick.AddListener(OpenCredits);
-            AddButtonSound(creditsButton);
-        }
-
-        if (exitButton != null)
-        {
-            exitButton.onClick.AddListener(ExitGame);
-            AddButtonSound(exitButton);
-        }
-
-        if (closeCreditsButton != null)
-        {
-            closeCreditsButton.onClick.AddListener(CloseCredits);
-            AddButtonSound(closeCreditsButton);
-        }
-
+        // Credits paneli başlangıçta kapalı
         if (creditsPanel != null)
+        {
             creditsPanel.SetActive(false);
 
+            // Credits text'i panelin en altına al
+            if (creditsText != null)
+            {
+                RectTransform textRT = creditsText.rectTransform;
+                textRT.anchoredPosition = new Vector2(0, -Screen.height * 0.5f - textRT.sizeDelta.y);
+            }
+        }
+
+        // Fareyi göster
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-
-        InitializeButtonAnimations();
-        StartTitleAnimation();
-
-        Debug.Log("🏠 Ana menü yüklendi");
     }
 
-    void InitializeButtonAnimations()
+    void SetupButtonHoverEffects()
     {
-        Button[] allButtons = { startButton, settingsButton, creditsButton, exitButton };
-        foreach (Button btn in allButtons)
+        Button[] buttons = { startButton, settingsButton, creditsButton, exitButton };
+
+        foreach (Button btn in buttons)
         {
             if (btn != null)
             {
-                buttonOriginalScales[btn] = btn.transform.localScale;
-                AddButtonHoverEffects(btn);
+                // Orijinal boyutu kaydet
+                originalButtonScales[btn] = btn.transform.localScale;
+
+                // EventTrigger ekle
+                EventTrigger trigger = btn.gameObject.GetComponent<EventTrigger>();
+                if (trigger == null) trigger = btn.gameObject.AddComponent<EventTrigger>();
+
+                // Hover giriş
+                EventTrigger.Entry enterEntry = new EventTrigger.Entry();
+                enterEntry.eventID = EventTriggerType.PointerEnter;
+                enterEntry.callback.AddListener((data) =>
+                {
+                    OnButtonHover(btn, true);
+                });
+                trigger.triggers.Add(enterEntry);
+
+                // Hover çıkış
+                EventTrigger.Entry exitEntry = new EventTrigger.Entry();
+                exitEntry.eventID = EventTriggerType.PointerExit;
+                exitEntry.callback.AddListener((data) =>
+                {
+                    OnButtonHover(btn, false);
+                });
+                trigger.triggers.Add(exitEntry);
+
+                // Click sesi ekle
+                btn.onClick.AddListener(PlayClickSound);
             }
         }
     }
 
-    void AddButtonHoverEffects(Button button)
+    void OnButtonHover(Button button, bool isEntering)
     {
-        EventTrigger trigger = button.gameObject.GetComponent<EventTrigger>();
-        if (trigger == null) trigger = button.gameObject.AddComponent<EventTrigger>();
+        if (button == null || !originalButtonScales.ContainsKey(button))
+            return;
 
-        EventTrigger.Entry entryEnter = new EventTrigger.Entry();
-        entryEnter.eventID = EventTriggerType.PointerEnter;
-        entryEnter.callback.AddListener((data) => { OnButtonHoverEnter(button); });
-        trigger.triggers.Add(entryEnter);
-
-        EventTrigger.Entry entryExit = new EventTrigger.Entry();
-        entryExit.eventID = EventTriggerType.PointerExit;
-        entryExit.callback.AddListener((data) => { OnButtonHoverExit(button); });
-        trigger.triggers.Add(entryExit);
-    }
-
-    void OnButtonHoverEnter(Button button)
-    {
-        if (button != null && buttonOriginalScales.ContainsKey(button))
+        if (isEntering)
         {
-            // YENİ: Hover sesi çal (eğer daha önce hover edilmemişse)
-            if (!hoveredButtons.Contains(button))
-            {
-                PlayHoverSound();
-                hoveredButtons.Add(button);
-            }
+            // Hover sesi
+            if (buttonHoverSound != null && audioSource != null)
+                audioSource.PlayOneShot(buttonHoverSound);
 
-            StopAllCoroutines();
-            StartCoroutine(AnimateButtonScale(button, buttonOriginalScales[button] * hoverScaleAmount));
+            // Büyüt
+            button.transform.localScale = originalButtonScales[button] * hoverScale;
+        }
+        else
+        {
+            // Küçült
+            button.transform.localScale = originalButtonScales[button];
         }
     }
 
-    void OnButtonHoverExit(Button button)
-    {
-        if (button != null && buttonOriginalScales.ContainsKey(button))
-        {
-            // YENİ: Butondan çıkınca hover listesinden çıkar
-            hoveredButtons.Remove(button);
-
-            StopAllCoroutines();
-            StartCoroutine(AnimateButtonScale(button, buttonOriginalScales[button]));
-        }
-    }
-
-    void PlayHoverSound()
-    {
-        if (buttonHoverSound != null && audioSource != null)
-        {
-            // YENİ: Hover sesini çal
-            audioSource.PlayOneShot(buttonHoverSound);
-            Debug.Log("🔊 Buton hover sesi çalındı");
-        }
-    }
-
-    IEnumerator AnimateButtonScale(Button button, Vector3 targetScale)
-    {
-        float elapsedTime = 0f;
-        Vector3 startScale = button.transform.localScale;
-
-        while (elapsedTime < 1f)
-        {
-            elapsedTime += Time.deltaTime * animationSpeed;
-            button.transform.localScale = Vector3.Lerp(startScale, targetScale, elapsedTime);
-            yield return null;
-        }
-
-        button.transform.localScale = targetScale;
-    }
-
-    void StartTitleAnimation()
-    {
-        if (gameTitleText != null)
-        {
-            StartCoroutine(AnimateTitle());
-        }
-    }
-
-    IEnumerator AnimateTitle()
-    {
-        Vector3 originalPosition = gameTitleText.transform.localPosition;
-
-        while (true)
-        {
-            float yOffset = Mathf.Sin(Time.time * titleFloatSpeed) * titleFloatAmount;
-            gameTitleText.transform.localPosition = originalPosition + new Vector3(0, yOffset, 0);
-            yield return null;
-        }
-    }
-
-    void AddButtonSound(Button button)
-    {
-        button.onClick.AddListener(PlayButtonSound);
-    }
-
-    void PlayButtonSound()
+    void PlayClickSound()
     {
         if (buttonClickSound != null && audioSource != null)
-        {
             audioSource.PlayOneShot(buttonClickSound);
-        }
     }
 
     public void StartGame()
     {
-        Debug.Log("🎮 Oyun başlatılıyor: " + gameSceneName);
+        Debug.Log("Oyun başlatılıyor...");
 
-        if (startButton != null)
-        {
-            StartCoroutine(ButtonClickEffect(startButton));
-        }
-
-        StartCoroutine(LoadGameScene());
-    }
-
-    IEnumerator ButtonClickEffect(Button button)
-    {
-        Vector3 originalScale = button.transform.localScale;
-
-        float elapsed = 0f;
-        while (elapsed < 0.1f)
-        {
-            elapsed += Time.deltaTime * 10f;
-            button.transform.localScale = Vector3.Lerp(originalScale, originalScale * 0.8f, elapsed);
-            yield return null;
-        }
-
-        elapsed = 0f;
-        while (elapsed < 0.1f)
-        {
-            elapsed += Time.deltaTime * 10f;
-            button.transform.localScale = Vector3.Lerp(originalScale * 0.8f, originalScale, elapsed);
-            yield return null;
-        }
-
-        button.transform.localScale = originalScale;
-    }
-
-    IEnumerator LoadGameScene()
-    {
-        yield return new WaitForSeconds(0.2f);
-        CleanupPreviousGame();
-        SceneManager.LoadScene(gameSceneName);
+        if (!string.IsNullOrEmpty(gameSceneName))
+            SceneManager.LoadScene(gameSceneName);
     }
 
     public void OpenSettings()
     {
-        Debug.Log("⚙️ Ayarlar açılıyor...");
-
-        if (settingsButton != null)
-        {
-            StartCoroutine(ButtonClickEffect(settingsButton));
-        }
+        Debug.Log("Ayarlar açılıyor...");
+        // Settings panelini buraya ekleyebilirsin
     }
 
     public void OpenCredits()
     {
-        Debug.Log("🎬 Emeği Geçenler açılıyor...");
+        if (isCreditsActive) return;
 
-        if (creditsButton != null)
-        {
-            StartCoroutine(ButtonClickEffect(creditsButton));
-        }
+        Debug.Log("Credits açılıyor...");
 
+        // Credits panelini aç
         if (creditsPanel != null)
         {
             creditsPanel.SetActive(true);
+            isCreditsActive = true;
 
+            // Credits text'i en alta al
             if (creditsText != null)
             {
-                creditsCoroutine = StartCoroutine(ScrollCredits());
+                RectTransform textRT = creditsText.rectTransform;
+                textRT.anchoredPosition = new Vector2(0, -Screen.height * 0.5f - textRT.sizeDelta.y);
+
+                // Kaydırmayı başlat
+                StartCoroutine(ScrollCreditsText());
             }
         }
+    }
+
+    IEnumerator ScrollCreditsText()
+    {
+        if (creditsText == null) yield break;
+
+        RectTransform textRT = creditsText.rectTransform;
+        Vector2 startPos = new Vector2(0, -Screen.height * 0.5f - textRT.sizeDelta.y);
+        Vector2 endPos = new Vector2(0, Screen.height * 0.5f + textRT.sizeDelta.y);
+
+        textRT.anchoredPosition = startPos;
+
+        float duration = Vector2.Distance(startPos, endPos) / scrollSpeed;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration && isCreditsActive)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / duration;
+
+            // Yumuşak kaydırma
+            textRT.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
+
+            // ESC veya tıklama ile çık
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(0))
+            {
+                CloseCredits();
+                yield break;
+            }
+
+            yield return null;
+        }
+
+        // Yazılar bittiğinde 2 saniye bekle ve kapat
+        yield return new WaitForSeconds(2f);
+        CloseCredits();
     }
 
     public void CloseCredits()
     {
-        Debug.Log("🎬 Emeği Geçenler kapatılıyor...");
+        if (!isCreditsActive) return;
 
-        if (closeCreditsButton != null)
-        {
-            StartCoroutine(ButtonClickEffect(closeCreditsButton));
-        }
+        Debug.Log("Credits kapatılıyor...");
+
+        isCreditsActive = false;
 
         if (creditsPanel != null)
-        {
             creditsPanel.SetActive(false);
 
-            if (creditsCoroutine != null)
-            {
-                StopCoroutine(creditsCoroutine);
-                creditsCoroutine = null;
-            }
-        }
-    }
-
-    IEnumerator ScrollCredits()
-    {
-        RectTransform textTransform = creditsText.GetComponent<RectTransform>();
-        Vector2 startPosition = textTransform.anchoredPosition;
-        startPosition.y = -creditsText.preferredHeight - 100f;
-        textTransform.anchoredPosition = startPosition;
-
-        while (textTransform.anchoredPosition.y < creditsText.preferredHeight + 100f)
-        {
-            textTransform.anchoredPosition += Vector2.up * scrollSpeed * Time.deltaTime;
-            yield return null;
-        }
-
-        CloseCredits();
+        // Tüm coroutine'leri durdur
+        StopAllCoroutines();
     }
 
     public void ExitGame()
     {
-        Debug.Log("👋 Oyun kapatılıyor...");
-
-        if (exitButton != null)
-        {
-            StartCoroutine(ButtonClickEffect(exitButton));
-        }
-
-        StartCoroutine(ExitGameDelayed());
-    }
-
-    IEnumerator ExitGameDelayed()
-    {
-        yield return new WaitForSeconds(0.2f);
+        Debug.Log("Oyun kapatılıyor...");
 
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-        Application.Quit();
+            Application.Quit();
 #endif
     }
 
     void Update()
     {
-        if (creditsPanel != null && creditsPanel.activeInHierarchy && Input.GetKeyDown(KeyCode.Escape))
-        {
+        // ESC ile credits'i kapat
+        if (isCreditsActive && Input.GetKeyDown(KeyCode.Escape))
             CloseCredits();
-        }
-    }
-
-    void CleanupPreviousGame()
-    {
-        Debug.Log("🧹 Önceki oyun temizleniyor...");
-
-        ybotController player = FindObjectOfType<ybotController>();
-        if (player != null)
-        {
-            Destroy(player.gameObject);
-            Debug.Log("✅ Player temizlendi");
-        }
-
-        IsometricCameraController camera = FindObjectOfType<IsometricCameraController>();
-        if (camera != null)
-        {
-            Destroy(camera.gameObject);
-            Debug.Log("✅ Kamera temizlendi");
-        }
-
-        HealthBarUI healthBar = FindObjectOfType<HealthBarUI>();
-        if (healthBar != null)
-        {
-            Destroy(healthBar.gameObject);
-            Debug.Log("✅ HealthBar temizlendi");
-        }
-
-        SpawnManager spawnManager = FindObjectOfType<SpawnManager>();
-        if (spawnManager != null)
-        {
-            Destroy(spawnManager.gameObject);
-            Debug.Log("✅ SpawnManager temizlendi");
-        }
-
-        PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
-        if (playerHealth != null && playerHealth.gameObject != player?.gameObject)
-        {
-            Destroy(playerHealth.gameObject);
-            Debug.Log("✅ PlayerHealth temizlendi");
-        }
-    }
-
-    public static void ReturnToMainMenu()
-    {
-        Scene currentScene = SceneManager.GetActiveScene();
-
-        if (currentScene.name != "MainMenu")
-        {
-            GameObject[] persistentObjects = GameObject.FindGameObjectsWithTag("Persistent");
-            foreach (GameObject obj in persistentObjects)
-            {
-                Destroy(obj);
-            }
-
-            SceneManager.LoadScene("MainMenu");
-        }
     }
 }

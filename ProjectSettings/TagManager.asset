@@ -20,6 +20,9 @@ TagManager:
   - Wall
   - Door9
   - Boss
+  - Cthulhu
+  - Pot
+  - Anchor
   layers:
   - Default
   - TransparentFX
@@ -30,8 +33,8 @@ TagManager:
   - Enemy
   - Obstacles
   - Player
-  - 
-  - 
+  - FogRevealer
+  - Interactable
   - 
   - 
   - 
@@ -56,6 +59,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Player
+    uniqueID: 3094998227
     locked: 0
   m_RenderingLayers:
   - Default

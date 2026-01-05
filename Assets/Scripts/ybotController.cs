@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 public class ybotController : MonoBehaviour
 {
@@ -21,10 +22,10 @@ public class ybotController : MonoBehaviour
     public float hoverEnergyDrainRate = 5f;
     public float hoverEnergyRegenRate = 3f;
     public float maxHoverEnergy = 100f;
-    public float hoverTiltAngle = 10f; // X ekseninde eğilme açısı eklendi
+    public float hoverTiltAngle = 10f;
 
     [Header("Effects")]
-    public GameObject hoverBubblePrefab; // ARTIK PREFAB!
+    public GameObject hoverBubblePrefab;
     public Transform bubbleSpawnPoint;
 
     [Header("Ground Check Settings")]
@@ -43,17 +44,22 @@ public class ybotController : MonoBehaviour
     // Hover Mode değişkenleri
     private bool isHovering = false;
     private bool hoverRequested = false;
-    private float currentHoverEnergy;
+    public float currentHoverEnergy; // PUBLIC yaptık ki HoverEnergyUI erişebilsin
     private Vector3 hoverStartPosition;
     private bool canHover = true;
     private float hoverBobTimer = 0f;
-    private GameObject currentBubbleInstance; // Sahnedeki particle instance
+    private GameObject currentBubbleInstance;
 
     // === REWARD SİSTEM İÇİN EKLENEN KOD ===
     private float baseWalkSpeed;
     private float baseRunSpeed;
     private float baseBackwardSpeed;
     // === EKLEME BURADA BİTTİ ===
+
+    // === HOVER ENERGY UI İÇİN EVENT SİSTEMİ ===
+    [System.Serializable]
+    public class HoverEnergyEvent : UnityEvent<float, bool, bool> { }
+    public HoverEnergyEvent OnHoverEnergyChanged = new HoverEnergyEvent();
 
     private void Start()
     {
@@ -116,6 +122,8 @@ public class ybotController : MonoBehaviour
             {
                 currentHoverEnergy += hoverEnergyRegenRate * Time.deltaTime;
                 currentHoverEnergy = Mathf.Clamp(currentHoverEnergy, 0, maxHoverEnergy);
+                // Enerji değiştiğinde event tetikle
+                OnHoverEnergyChanged?.Invoke(GetHoverEnergyPercentage(), IsHovering(), IsRecharging());
             }
 
             // Hover bob timer
@@ -154,6 +162,9 @@ public class ybotController : MonoBehaviour
                 ybotAnim.SetBool("isJumping", isJumping);
                 ybotAnim.SetBool("isHovering", isHovering);
             }
+
+            // HoverEnergyUI'yi güncelle
+            UpdateHoverUI();
         }
     }
 
@@ -185,9 +196,13 @@ public class ybotController : MonoBehaviour
                 HandleHover();
 
                 currentHoverEnergy -= hoverEnergyDrainRate * Time.deltaTime;
+                currentHoverEnergy = Mathf.Max(currentHoverEnergy, 0);
+
+                // Enerji değiştiğinde event tetikle
+                OnHoverEnergyChanged?.Invoke(GetHoverEnergyPercentage(), IsHovering(), IsRecharging());
+
                 if (currentHoverEnergy <= 0)
                 {
-                    currentHoverEnergy = 0;
                     StopHover();
                 }
             }
@@ -215,6 +230,9 @@ public class ybotController : MonoBehaviour
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
         transform.position = hoverStartPosition;
 
+        // Event tetikle
+        OnHoverEnergyChanged?.Invoke(GetHoverEnergyPercentage(), IsHovering(), IsRecharging());
+
         // PREFAB'DAN PARTICLE INSTANCE OLUŞTUR
         if (hoverBubblePrefab != null && bubbleSpawnPoint != null)
         {
@@ -237,12 +255,6 @@ public class ybotController : MonoBehaviour
             {
                 particleSystem.Play();
             }
-
-            Debug.Log($"Hover başladı! Particle oluşturuldu: {currentBubbleInstance.name}");
-        }
-        else
-        {
-            Debug.LogWarning($"HoverBubblePrefab veya SpawnPoint NULL! Prefab: {hoverBubblePrefab != null}, SpawnPoint: {bubbleSpawnPoint != null}");
         }
     }
 
@@ -277,6 +289,9 @@ public class ybotController : MonoBehaviour
     {
         isHovering = false;
         rb.useGravity = true;
+
+        // Event tetikle
+        OnHoverEnergyChanged?.Invoke(GetHoverEnergyPercentage(), IsHovering(), IsRecharging());
 
         // Rotation'ı sıfırla (X eksenini 0 yap)
         Quaternion currentRotation = transform.rotation;
@@ -460,6 +475,7 @@ public class ybotController : MonoBehaviour
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
 
+    // === HOVER ENERGY UI İÇİN GEREKLİ METODLAR ===
     public float GetHoverEnergyPercentage()
     {
         return currentHoverEnergy / maxHoverEnergy;
@@ -468,5 +484,29 @@ public class ybotController : MonoBehaviour
     public bool IsHovering()
     {
         return isHovering;
+    }
+
+    public bool IsRecharging()
+    {
+        // Eğer hover modunda değilse ve enerji %100'den azsa şarj oluyor demektir
+        return !isHovering && currentHoverEnergy < maxHoverEnergy;
+    }
+
+    public bool HasEnergyMethods()
+    {
+        return true; // Metodların var olduğunu doğrula
+    }
+
+    void UpdateHoverUI()
+    {
+        // Manuel güncelleme (event sistemi varsa gerek yok)
+        // Bu metod event sistemi olmadan HoverEnergyUI'yi günceller
+    }
+
+    // === SAHNE DEĞİŞİKLİĞİ İÇİN METOD ===
+    public void ResetHoverEnergy()
+    {
+        currentHoverEnergy = maxHoverEnergy;
+        OnHoverEnergyChanged?.Invoke(GetHoverEnergyPercentage(), IsHovering(), IsRecharging());
     }
 }
