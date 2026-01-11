@@ -431,9 +431,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 114237664}
   flipX: 0
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &114237664 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -733,128 +736,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1001 &212932137
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 601425425068485350, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_AngularDamping
-      value: 0.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 964482192295409620, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_FlipX
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 964482192295409620, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: -1465147953, guid: 1d3a048ff496d144e9a37773cbc467d2, type: 3}
-    - target: {fileID: 964482192295409620, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_SortingOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3172618509379763863, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1.7718028
-      objectReference: {fileID: 0}
-    - target: {fileID: 3172618509379763863, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.2937899
-      objectReference: {fileID: 0}
-    - target: {fileID: 3172618509379763863, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1.293833
-      objectReference: {fileID: 0}
-    - target: {fileID: 3172618509379763863, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.16
-      objectReference: {fileID: 0}
-    - target: {fileID: 3172618509379763863, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3172618509379763863, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3172618509379763863, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3172618509379763863, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3172618509379763863, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3172618509379763863, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3172618509379763863, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3172618509379763863, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3172618509379763863, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3907291565464317825, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: player
-      value: 
-      objectReference: {fileID: 1107881034}
-    - target: {fileID: 3907291565464317825, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3907291565464317825, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: mainCamera
-      value: 
-      objectReference: {fileID: 1847285889}
-    - target: {fileID: 3907291565464317825, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: flipThreshold
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5573246440490525683, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_Radius
-      value: 3.3906126
-      objectReference: {fileID: 0}
-    - target: {fileID: 5573246440490525683, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_Offset.x
-      value: 0.08542538
-      objectReference: {fileID: 0}
-    - target: {fileID: 7957612591237323965, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_Name
-      value: Cthulhu
-      objectReference: {fileID: 0}
-    - target: {fileID: 7957612591237323965, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7957612591237323965, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1282133241}
-    - targetCorrespondingSourceObject: {fileID: 7957612591237323965, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1282133245}
-    - targetCorrespondingSourceObject: {fileID: 7957612591237323965, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1282133248}
-  m_SourcePrefab: {fileID: 100100000, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
 --- !u!1 &275344468
 GameObject:
   m_ObjectHideFlags: 0
@@ -973,9 +854,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 308635295}
   flipX: 0
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!1001 &319933843
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1354,9 +1238,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 373485142}
   flipX: 0
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &373485142 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -1474,6 +1361,108 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 5, y: 5}
   m_EdgeRadius: 0
+--- !u!1 &473784123
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 473784127}
+  - component: {fileID: 473784126}
+  - component: {fileID: 473784125}
+  - component: {fileID: 473784124}
+  m_Layer: 5
+  m_Name: OxygenBarCanvas
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &473784124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 473784123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!114 &473784125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 473784123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
+  m_UiScaleMode: 0
+  m_ReferencePixelsPerUnit: 100
+  m_ScaleFactor: 1
+  m_ReferenceResolution: {x: 800, y: 600}
+  m_ScreenMatchMode: 0
+  m_MatchWidthOrHeight: 0
+  m_PhysicalUnit: 3
+  m_FallbackScreenDPI: 96
+  m_DefaultSpriteDPI: 96
+  m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
+--- !u!223 &473784126
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 473784123}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 0
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
+--- !u!224 &473784127
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 473784123}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1981410769}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0, y: 0}
 --- !u!1 &485767328 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7372326581556756789, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -1500,9 +1489,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 485767333}
   flipX: 0
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &485767333 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -1673,9 +1665,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 613380598}
   flipX: 0
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &613380598 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -2084,9 +2079,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 658711238}
   flipX: 1
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &658711238 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -2118,9 +2116,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 676984583}
   flipX: 1
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &676984583 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -2754,9 +2755,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 759008882}
   flipX: 1
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &759008882 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -2819,9 +2823,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 805557448}
   flipX: 0
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &805557448 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -3404,9 +3411,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 951039807}
   flipX: 1
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &951039807 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -3944,9 +3954,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 1086049903}
   flipX: 1
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &1086049903 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -3978,9 +3991,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 1097393969}
   flipX: 1
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &1097393969 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -4083,9 +4099,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 1132272996}
   flipX: 0
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &1132272996 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -4117,9 +4136,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 1157249826}
   flipX: 0
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &1157249826 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -4884,96 +4906,17 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 1280402976}
   flipX: 1
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &1280402976 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
   m_PrefabInstance: {fileID: 1248573104}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1282133235 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7957612591237323965, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-  m_PrefabInstance: {fileID: 212932137}
-  m_PrefabAsset: {fileID: 0}
---- !u!212 &1282133239 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 964482192295409620, guid: fbd9c0b10a16d9f4bb2610ee3f687256, type: 3}
-  m_PrefabInstance: {fileID: 212932137}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1282133241
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1282133235}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cb24d96895db5447bc8084d05c1a0aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CthulhuChase
-  player: {fileID: 1107881034}
-  chaseSpeed: 12
-  acceleration: 2
-  minDistanceFromPlayer: 3
-  maxDistanceFromPlayer: 15
-  attackRange: 1.5
-  cthulhuSprite: {fileID: 1282133239}
-  animator: {fileID: 0}
-  respawnPosition: {x: 0, y: -10, z: 0}
---- !u!114 &1282133245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1282133235}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b303beeef3be80469badfe367be661e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CthulhuSpawner
-  cthulhuPrefab: {fileID: 1282133235}
-  spawnDelay: 2
-  spawnOffset: {x: 0, y: -10, z: 0}
---- !u!58 &1282133248
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1282133235}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0.28219846, y: -1.5458461}
-  m_Radius: 4
 --- !u!1 &1336861326 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7372326581556756789, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -5000,9 +4943,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 1336861331}
   flipX: 1
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &1336861331 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -5034,9 +4980,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 1353456145}
   flipX: 0
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &1353456145 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -5172,9 +5121,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 1372971803}
   flipX: 1
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &1372971803 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -5341,9 +5293,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 1431323232}
   flipX: 0
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &1431323232 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -5870,7 +5825,6 @@ MonoBehaviour:
   score: 0
   scrollCamera: {fileID: 1847285894}
   player: {fileID: 1107881034}
-  cthulhu: {fileID: 1282133241}
   scoreText: {fileID: 0}
   speedLevelText: {fileID: 0}
   deathCountText: {fileID: 2036595526}
@@ -5879,7 +5833,6 @@ MonoBehaviour:
   finalScoreText: {fileID: 0}
   difficultyIncreaseInterval: 10
   cameraSpeedIncrease: 0.5
-  cthulhuSpeedIncrease: 0.3
 --- !u!4 &1595520082
 Transform:
   m_ObjectHideFlags: 0
@@ -5995,6 +5948,81 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 485767330}
   m_SourcePrefab: {fileID: 100100000, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
+--- !u!1 &1664250681
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1664250682}
+  - component: {fileID: 1664250684}
+  - component: {fileID: 1664250683}
+  m_Layer: 5
+  m_Name: background
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1664250682
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1664250681}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1981410769}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -32.80005, y: 4.2000732}
+  m_SizeDelta: {x: 450, y: 130}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1664250683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1664250681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: -1035553087, guid: 4dbc4f54966dbaf4ea50ac0cb4bddbd0, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1664250684
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1664250681}
+  m_CullTransparentMesh: 1
 --- !u!1 &1729703974
 GameObject:
   m_ObjectHideFlags: 0
@@ -6342,9 +6370,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 1815179138}
   flipX: 1
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &1815179138 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -6508,7 +6539,7 @@ MonoBehaviour:
   minX: 0
   maxX: 0
   minY: -8
-  maxY: 272
+  maxY: 253
   player: {fileID: 1107881034}
   gameCamera: {fileID: 1847285889}
 --- !u!1 &1859409249
@@ -6644,7 +6675,6 @@ MonoBehaviour:
   nextSceneName: Level2
   displayText: Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn
   fadeAndText: {fileID: 275344469}
-  cthulhu: {fileID: 1282133241}
   showGizmos: 1
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!4 &1884605259
@@ -6680,7 +6710,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerRespawn
   spawnPosition: {x: 0, y: -1.45, z: 0}
-  ghostSpeed: 15
+  ghostSpeed: 30
   ghostColor: {r: 0.5, g: 0.8, b: 1, a: 0.6}
   ghostParticles: {fileID: 0}
   ghostSound: {fileID: 0}
@@ -6689,6 +6719,30 @@ MonoBehaviour:
   screenGhostColor: {r: 0.0985226, g: 0.26545537, b: 0.509434, a: 0.4}
   screenFadeInTime: 0.5
   screenFadeOutTime: 0.8
+--- !u!114 &1922419322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1922419307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dffd239e10e57f947aa228cd2ce80dbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OxygenSystem
+  maxOxygen: 100
+  oxygenDrainRate: 3
+  oxygenFillImage: {fileID: 1981410770}
+  normalColor: {r: 0, g: 1, b: 1, a: 1}
+  lowColor: {r: 1, g: 0, b: 0, a: 1}
+  lowOxygenThreshold: 30
+  lowOxygenSound: {fileID: 0}
+  bubblesParticles: {fileID: 0}
+  bubbleRateNormal: 5
+  bubbleRateLow: 20
+  useGradientColor: 1
+  mediumColor: {r: 0, g: 0.5, b: 1, a: 1}
 --- !u!1 &1977665757 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7372326581556756789, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -6715,14 +6769,93 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 1977665762}
   flipX: 1
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &1977665762 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
   m_PrefabInstance: {fileID: 319933843}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1981410768
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1981410769}
+  - component: {fileID: 1981410771}
+  - component: {fileID: 1981410770}
+  m_Layer: 5
+  m_Name: fill
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1981410769
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1981410768}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1664250682}
+  m_Father: {fileID: 473784127}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -695.6, y: -478}
+  m_SizeDelta: {x: 330, y: 60}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1981410770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1981410768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: d8e11f4992c462240aeda749f073a9f3, type: 3}
+  m_Type: 3
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 0
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1981410771
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1981410768}
+  m_CullTransparentMesh: 1
 --- !u!1 &1998681168 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7372326581556756789, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -6749,9 +6882,12 @@ MonoBehaviour:
   swingAmount: 20
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 1998681173}
   flipX: 1
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &1998681173 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -7020,9 +7156,12 @@ MonoBehaviour:
   swingAmount: 30
   slowAmount: 0.5
   slowDuration: 0.5
+  activationCooldown: 3
   tentacleSprite: {fileID: 2043956931}
   flipX: 1
   flipY: 0
+  grabParticles: {fileID: 0}
+  grabSound: {fileID: 0}
 --- !u!212 &2043956931 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 6676911514519802092, guid: bac6d54763f029a4b8ef5e352d7c343a, type: 3}
@@ -7089,11 +7228,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6385069061627100542, guid: 3a94dad99b8d9a24ba186876f2713792, type: 3}
       propertyPath: swimSpeed
-      value: 15
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 6385069061627100542, guid: 3a94dad99b8d9a24ba186876f2713792, type: 3}
       propertyPath: swimAcceleration
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6719943676864592667, guid: 3a94dad99b8d9a24ba186876f2713792, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7146,6 +7285,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9132086336516011780, guid: 3a94dad99b8d9a24ba186876f2713792, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1922419315}
+    - targetCorrespondingSourceObject: {fileID: 9132086336516011780, guid: 3a94dad99b8d9a24ba186876f2713792, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1922419322}
   m_SourcePrefab: {fileID: 100100000, guid: 3a94dad99b8d9a24ba186876f2713792, type: 3}
 --- !u!1001 &6903611532230868397
 PrefabInstance:
@@ -7302,7 +7444,6 @@ SceneRoots:
   - {fileID: 1847285890}
   - {fileID: 2781873558512386513}
   - {fileID: 1595520082}
-  - {fileID: 212932137}
   - {fileID: 1859409250}
   - {fileID: 49114091}
   - {fileID: 1098782587}
@@ -7311,3 +7452,4 @@ SceneRoots:
   - {fileID: 597571988}
   - {fileID: 1884605259}
   - {fileID: 275344470}
+  - {fileID: 473784127}

@@ -28,6 +28,7 @@ public class PlayerRespawn : MonoBehaviour
     private Canvas canvas;
     private bool hasRespawned = true;
     private bool isRespawning = false;
+    private OxygenSystem oxygenSystem;
 
     // Event'ler için delegate'ler
     public System.Action OnRespawnComplete;
@@ -41,6 +42,7 @@ public class PlayerRespawn : MonoBehaviour
         swimController = GetComponent<PlayerSwimController>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         playerCollider = GetComponent<Collider2D>();
+        oxygenSystem = GetComponent<OxygenSystem>();
 
         CreateScreenOverlay();
         hasRespawned = true;
@@ -78,11 +80,9 @@ public class PlayerRespawn : MonoBehaviour
     {
         if (isRespawning) return;
 
-        // Respawn başladı event'ini tetikle
-        Debug.Log("📢 Respawn başladı event'i tetikleniyor...");
+        Debug.Log("📢 Respawn başladı!");
         OnRespawnStart?.Invoke();
 
-        // Ölüm event'ini tetikle
         Debug.Log("📢 Ölüm event'i tetikleniyor...");
         OnDeath?.Invoke();
 
@@ -94,6 +94,12 @@ public class PlayerRespawn : MonoBehaviour
         Debug.Log("👻 HAYALET FORMA GEÇİLİYOR...");
         isRespawning = true;
         hasRespawned = false;
+
+        // ÖNEMLİ: Oksijen sistemini DURDUR
+        if (oxygenSystem != null)
+        {
+            oxygenSystem.StopOxygenSystem();
+        }
 
         yield return StartCoroutine(FadeScreenEffect(true, screenFadeInTime));
 
@@ -127,12 +133,10 @@ public class PlayerRespawn : MonoBehaviour
         if (respawnSound != null)
             AudioSource.PlayClipAtPoint(respawnSound, transform.position, 1f);
 
-        NotifyCthulhuPlayerReady();
         hasRespawned = true;
         isRespawning = false;
 
-        // Respawn tamamlandı event'ini tetikle
-        Debug.Log("✅ HAYALET RESPAWN TAMAMLANDI! Event tetikleniyor...");
+        Debug.Log("✅ HAYALET RESPAWN TAMAMLANDI!");
         OnRespawnComplete?.Invoke();
     }
 
@@ -168,51 +172,52 @@ public class PlayerRespawn : MonoBehaviour
     {
         if (playerCollider != null) playerCollider.enabled = !ghost;
         if (spriteRenderer != null) spriteRenderer.color = ghost ? ghostColor : Color.white;
+
         if (ghostParticles != null)
         {
             if (ghost) ghostParticles.Play();
             else ghostParticles.Stop();
         }
+
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
             rb.simulated = !ghost;
         }
+
         if (swimController != null)
         {
-            if (ghost) swimController.StopSwimming();
             swimController.enabled = !ghost;
+            if (!ghost) swimController.StartSwimming();
         }
-        if (animator != null) animator.enabled = !ghost;
 
-        if (ghost) StopAnchorSpawning();
-        else StartAnchorSpawning();
+        if (animator != null) animator.enabled = !ghost;
     }
 
     void CompleteRespawn()
     {
         transform.position = spawnPosition;
+
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
         }
+
         if (animator != null)
         {
             animator.SetBool("IsMoving", false);
             animator.SetBool("IsSwimming", true);
             animator.Play("Idle", 0, 0f);
         }
-        if (swimController != null) swimController.StartSwimming();
-    }
 
-    void NotifyCthulhuPlayerReady()
-    {
-        CthulhuChase[] allCthulhus = FindObjectsOfType<CthulhuChase>();
-        foreach (CthulhuChase cthulhu in allCthulhus)
+        if (swimController != null) swimController.StartSwimming();
+
+        // OKSİJENİ DOLDUR VE SİSTEMİ YENİDEN BAŞLAT
+        if (oxygenSystem != null)
         {
-            if (cthulhu != null)
-                cthulhu.OnPlayerRespawnComplete();
+            oxygenSystem.RefillOxygen();
+            oxygenSystem.StartOxygenSystem();
         }
     }
 
@@ -236,7 +241,6 @@ public class PlayerRespawn : MonoBehaviour
     {
         Debug.Log("Direct RespawnPlayer çağrıldı");
 
-        // Respawn başladı event'ini tetikle
         OnRespawnStart?.Invoke();
 
         if (swimController != null) swimController.ResetAllEffects();
@@ -257,17 +261,26 @@ public class PlayerRespawn : MonoBehaviour
 
         if (swimController != null) swimController.StartSwimming();
 
+        // OKSİJENİ DOLDUR VE SİSTEMİ YENİDEN BAŞLAT
+        if (oxygenSystem != null)
+        {
+            oxygenSystem.RefillOxygen();
+            oxygenSystem.StartOxygenSystem();
+        }
+
         hasRespawned = true;
         isRespawning = false;
 
-        NotifyCthulhuPlayerReady();
         StartAnchorSpawning();
 
-        // Event'i tetikle
         OnRespawnComplete?.Invoke();
     }
 
-    public void HandleDeath() => StartGhostRespawn(transform.position);
+    public void HandleDeath()
+    {
+        Debug.Log("💀 Player öldü, respawn başlatılıyor...");
+        StartGhostRespawn(transform.position);
+    }
 
     void OnDestroy()
     {

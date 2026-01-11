@@ -14,26 +14,26 @@ public class DeathScreenUI : MonoBehaviour
     public Button quitButton;
 
     [Header("Death Messages")]
-    public string defaultDeathMessage = "OKSİJEN TÜKENDİ";
-    public string enemyDeathMessage = "DÜŞMAN TARAFINDAN YOK EDİLDİN";
+    public string defaultDeathMessage = "OXYGEN DEPLETED";
+    public string enemyDeathMessage = "ELIMINATED BY ENEMY";
 
     private PlayerHealth playerHealth;
 
     void Start()
     {
-        // Başlangıçta death paneli gizle
+        // Hide death panel at start
         if (deathPanel != null)
             deathPanel.SetActive(false);
 
-        // PlayerHealth'i bul
+        // Find PlayerHealth
         playerHealth = FindObjectOfType<PlayerHealth>();
         if (playerHealth != null)
         {
-            // Ölüm event'ine bağla
+            // Subscribe to death event
             playerHealth.OnDeath.AddListener(OnPlayerDeath);
         }
 
-        // Buton event'lerini MANUEL bağla
+        // MANUALLY assign button events
         if (restartButton != null)
             restartButton.onClick.AddListener(RestartGame);
 
@@ -43,7 +43,7 @@ public class DeathScreenUI : MonoBehaviour
         if (quitButton != null)
             quitButton.onClick.AddListener(QuitGame);
 
-        Debug.Log("💀 DeathScreenUI başlatıldı - Buton event'leri bağlandı");
+        Debug.Log("💀 DeathScreenUI initialized - Button events assigned");
     }
 
     void OnPlayerDeath()
@@ -53,33 +53,33 @@ public class DeathScreenUI : MonoBehaviour
 
     public void ShowDeathScreen(string deathReason = "")
     {
-        Debug.Log("💀 Death screen gösteriliyor");
+        Debug.Log("💀 Showing death screen");
 
-        // Zamanı durdur
+        // Pause time
         Time.timeScale = 0f;
 
-        // Fareyi göster
+        // Show cursor
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
-        // Death paneli göster
+        // Show death panel
         if (deathPanel != null)
             deathPanel.SetActive(true);
 
-        // Ölüm sebebini ayarla
+        // Set death reason
         if (deathReasonText != null)
         {
             string message = GetDeathMessage(deathReason);
             deathReasonText.text = message;
         }
 
-        // İstatistikleri göster
+        // Show statistics
         if (statsSummaryText != null)
         {
             statsSummaryText.text = GetStatsSummary();
         }
 
-        // ESC menüyü kapat (açıksa)
+        // Close ESC menu (if open)
         ESCMenu escMenu = FindObjectOfType<ESCMenu>();
         if (escMenu != null && escMenu.isMenuOpen)
         {
@@ -92,7 +92,6 @@ public class DeathScreenUI : MonoBehaviour
         switch (reason.ToLower())
         {
             case "enemy":
-            case "düşman":
                 return enemyDeathMessage;
             default:
                 return defaultDeathMessage;
@@ -101,25 +100,25 @@ public class DeathScreenUI : MonoBehaviour
 
     string GetStatsSummary()
     {
-        string summary = "SON İSTATİSTİKLERİN\n\n";
+        string summary = "YOUR FINAL STATS\n\n";
 
         if (PlayerStats.Instance != null)
         {
-            // "TOPLAM İSTATİSTİKLER" başlığını kaldır, sadece istatistikleri al
+            // Remove "TOTAL STATISTICS" header, just get the stats
             string stats = PlayerStats.Instance.GetTotalStatsSummary();
-            // "TOPLAM İSTATİSTİKLER" yazısını sil
-            stats = stats.Replace("TOPLAM İSTATİSTİKLER\n\n", "");
+            // Remove "TOTAL STATISTICS" text
+            stats = stats.Replace("TOTAL STATISTICS\n\n", "");
             summary += stats;
         }
         else
         {
-            summary += "İstatistikler yüklenemedi";
+            summary += "Failed to load statistics";
         }
 
-        // Player health bilgisi
+        // Player health information
         if (playerHealth != null)
         {
-            summary += $"\n\n💧 Son Oksijen: {playerHealth.currentHealth}/{playerHealth.maxHealth}";
+            summary += $"\n\n💧 Final Oxygen: {playerHealth.currentHealth}/{playerHealth.maxHealth}";
         }
 
         return summary;
@@ -127,30 +126,30 @@ public class DeathScreenUI : MonoBehaviour
 
     public void RestartGame()
     {
-        Debug.Log("🔁 Oyun yeniden başlatılıyor...");
+        Debug.Log("🔁 Restarting game...");
 
-        // Zamanı normale döndür
+        // Restore normal time
         Time.timeScale = 1f;
 
-        // Mevcut sahneyi yeniden yükle
+        // Reload current scene
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.name);
     }
 
     public void GoToMainMenu()
     {
-        Debug.Log("🏠 Ana menüye dönülüyor...");
+        Debug.Log("🏠 Returning to main menu...");
 
-        // Zamanı normale döndür
+        // Restore normal time
         Time.timeScale = 1f;
 
-        // Ana menüye git
+        // Go to main menu
         SceneManager.LoadScene("MainMenu");
     }
 
     public void QuitGame()
     {
-        Debug.Log("🔴 Oyun kapatılıyor...");
+        Debug.Log("🔴 Quitting game...");
         Application.Quit();
 
 #if UNITY_EDITOR
@@ -160,13 +159,13 @@ public class DeathScreenUI : MonoBehaviour
 
     void OnDestroy()
     {
-        // Event bağlantılarını temizle
+        // Clean up event connections
         if (playerHealth != null)
         {
             playerHealth.OnDeath.RemoveListener(OnPlayerDeath);
         }
 
-        // Buton event'lerini temizle
+        // Clean up button events
         if (restartButton != null)
             restartButton.onClick.RemoveListener(RestartGame);
 

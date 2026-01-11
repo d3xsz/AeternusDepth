@@ -1,50 +1,56 @@
-using UnityEngine;
+ï»¿using UnityEngine;
+using System.Collections;
 
 public class TentacleTrap : MonoBehaviour
 {
-    [Header("Sallanma Ayarları")]
+    [Header("Sallanma AyarlarÄ±")]
     public float swingSpeed = 0.7f;
     public float swingAmount = 40f;
 
-    [Header("Tuzak Ayarları")]
+    [Header("Tuzak AyarlarÄ±")]
     public float slowAmount = 0.5f;
     public float slowDuration = 2f;
+    public float activationCooldown = 3f; // YENÄ°: Cooldown sÃ¼resi
 
-    [Header("Görsel")]
+    [Header("GÃ¶rsel")]
     public SpriteRenderer tentacleSprite;
 
-    [Header("Yön Ayarları")]
-    public bool flipX = false; // Editor'da buradan kontrol et
+    [Header("YÃ¶n AyarlarÄ±")]
+    public bool flipX = false;
     public bool flipY = false;
 
+    [Header("Efektler")]
+    public ParticleSystem grabParticles;
+    public AudioClip grabSound;
+
     private float timer = 0f;
-    private Vector3 basePosition;
-    private Quaternion baseRotation;
     private float directionMultiplier = 1f;
+    private bool isActive = true;
+    private Color originalColor;
 
     void Start()
     {
-        basePosition = transform.position;
-        baseRotation = transform.rotation;
-
-        // Sprite flip ayarlarını uygula
+        // Sprite flip ayarlarÄ±nÄ± uygula
         if (tentacleSprite != null)
         {
             tentacleSprite.flipX = flipX;
             tentacleSprite.flipY = flipY;
+            originalColor = tentacleSprite.color;
         }
 
-        // Flip durumuna göre yön çarpanını ayarla
+        // Flip durumuna gÃ¶re yÃ¶n Ã§arpanÄ±nÄ± ayarla
         directionMultiplier = flipX ? -1f : 1f;
 
-        Debug.Log($"Tentacle başlatıldı. FlipX: {flipX}, Direction: {directionMultiplier}");
+        Debug.Log($"Tentacle baÅŸlatÄ±ldÄ±. FlipX: {flipX}, Direction: {directionMultiplier}");
     }
 
     void Update()
     {
+        if (!isActive) return; // Cooldown'da sallanma durur
+
         timer += Time.deltaTime * swingSpeed;
 
-        // Yavaş sallanma
+        // YavaÅŸ sallanma
         float swing = Mathf.Sin(timer) * swingAmount * directionMultiplier;
 
         // Rotasyonu uygula
@@ -53,63 +59,124 @@ public class TentacleTrap : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        if (!isActive) return; // Cooldown'da tetiklenmez
+
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player dokunacağa çarptı!");
-            ApplySlowEffect();
+            Debug.Log("ğŸ¦‘ Player tentacle'a Ã§arptÄ±!");
+
+            // YavaÅŸlatma efektini uygula
+            ApplySlowEffect(other.gameObject);
+
+            // GÃ¶rsel ve ses efektleri
             StartCoroutine(GrabEffect());
+
+            // Cooldown baÅŸlat
+            StartCoroutine(CooldownRoutine());
         }
     }
 
-    void ApplySlowEffect()
+    void ApplySlowEffect(GameObject playerObject)
     {
-        // DÜZELTİLMİŞ KOD: Artık bu metod GameManager'da var
-        if (GameManager.Instance != null)
+        // Direkt PlayerSwimController'a eriÅŸ
+        PlayerSwimController swimController = playerObject.GetComponent<PlayerSwimController>();
+        if (swimController != null)
         {
-            GameManager.Instance.PlayerHitByTentacle(slowAmount, slowDuration);
+            swimController.ApplySlow(slowAmount, slowDuration);
+            Debug.Log($"ğŸ¦‘ Tentacle: Player %{(1 - slowAmount) * 100} yavaÅŸladÄ±, {slowDuration}s sÃ¼reyle");
         }
         else
         {
-            // Alternatif: direkt PlayerSwimController'a eriş
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null)
-            {
-                PlayerSwimController swimController = player.GetComponent<PlayerSwimController>();
-                if (swimController != null)
-                {
-                    swimController.ApplySlow(slowAmount, slowDuration);
-                }
-            }
+            Debug.LogWarning("âš ï¸ TentacleTrap: PlayerSwimController bulunamadÄ±!");
         }
     }
 
-    System.Collections.IEnumerator GrabEffect()
+    IEnumerator GrabEffect()
     {
+        // KÄ±rmÄ±zÄ± parlama efekti
         if (tentacleSprite != null)
         {
-            Color originalColor = tentacleSprite.color;
             tentacleSprite.color = Color.red;
+        }
 
-            yield return new WaitForSeconds(0.2f);
+        // PartikÃ¼l efekti
+        if (grabParticles != null)
+        {
+            grabParticles.Play();
+        }
 
+        // Ses efekti
+        if (grabSound != null)
+        {
+            AudioSource.PlayClipAtPoint(grabSound, transform.position);
+        }
+
+        yield return new WaitForSeconds(0.2f);
+
+        // Rengi normale dÃ¶ndÃ¼r
+        if (tentacleSprite != null)
+        {
             tentacleSprite.color = originalColor;
         }
     }
 
-    // Gizmos ile görselleştirme
+    IEnumerator CooldownRoutine()
+    {
+        isActive = false;
+
+        // GÃ¶rsel olarak devre dÄ±ÅŸÄ± gÃ¶ster (gri renk)
+        if (tentacleSprite != null)
+        {
+            tentacleSprite.color = Color.gray;
+        }
+
+        Debug.Log($"â³ Tentacle devre dÄ±ÅŸÄ±, {activationCooldown}s sonra aktif");
+
+        yield return new WaitForSeconds(activationCooldown);
+
+        isActive = true;
+
+        // GÃ¶rsel olarak aktif gÃ¶ster
+        if (tentacleSprite != null)
+        {
+            tentacleSprite.color = originalColor;
+        }
+
+        Debug.Log("âœ… Tentacle yeniden aktif");
+    }
+
+    // Gizmos ile gÃ¶rselleÅŸtirme
     void OnDrawGizmosSelected()
     {
-        // Pivot noktası
+        // Pivot noktasÄ±
         Gizmos.color = Color.yellow;
         Gizmos.DrawSphere(transform.position, 0.15f);
 
-        // Sallanma yönü
+        // Sallanma yÃ¶nÃ¼
         Vector3 direction = (flipX ? Vector3.left : Vector3.right);
         Gizmos.color = Color.green;
         Gizmos.DrawRay(transform.position, direction * 2f);
+
+        // Trigger alanÄ± (Collider'Ä±n boyutu)
+        Collider2D collider = GetComponent<Collider2D>();
+        if (collider != null)
+        {
+            Gizmos.color = new Color(1, 0, 0, 0.3f);
+
+            if (collider is BoxCollider2D)
+            {
+                BoxCollider2D boxCollider = (BoxCollider2D)collider;
+                Gizmos.DrawCube(transform.position + (Vector3)boxCollider.offset, boxCollider.size);
+            }
+            else if (collider is CircleCollider2D)
+            {
+                CircleCollider2D circleCollider = (CircleCollider2D)collider;
+                Gizmos.DrawSphere(transform.position + (Vector3)circleCollider.offset, circleCollider.radius);
+            }
+        }
     }
 
-    // EDITOR İÇİN: Inspector'da değişiklik olduğunda
+    // EDITOR Ä°Ã‡Ä°N: Inspector'da deÄŸiÅŸiklik olduÄŸunda
     void OnValidate()
     {
         if (tentacleSprite != null)
@@ -117,5 +184,35 @@ public class TentacleTrap : MonoBehaviour
             tentacleSprite.flipX = flipX;
             tentacleSprite.flipY = flipY;
         }
+    }
+
+    // MANUEL AKTÄ°VASYON (test iÃ§in)
+    public void TestTrigger()
+    {
+        if (isActive)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                ApplySlowEffect(player);
+                StartCoroutine(GrabEffect());
+                StartCoroutine(CooldownRoutine());
+            }
+        }
+    }
+
+    // RESET (respawn sÄ±rasÄ±nda)
+    public void ResetTrap()
+    {
+        StopAllCoroutines();
+        isActive = true;
+
+        if (tentacleSprite != null)
+        {
+            tentacleSprite.color = originalColor;
+        }
+
+        transform.rotation = Quaternion.identity;
+        timer = 0f;
     }
 }

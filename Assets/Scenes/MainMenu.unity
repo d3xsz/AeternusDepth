@@ -1564,6 +1564,10 @@ MonoBehaviour:
   gameSceneName: SampleScene
   buttonClickSound: {fileID: 8300000, guid: 061cf398b5d52ac42832904dae83e295, type: 3}
   buttonHoverSound: {fileID: 0}
+  menuMusic: {fileID: 8300000, guid: 66937612d7cf46f49afb32c34f6e35c1, type: 3}
+  creditsMusic: {fileID: 8300000, guid: 3eb6b499f8253f54485ac1ff50ebe134, type: 3}
+  musicVolume: 0.5
+  sfxVolume: 0.7
   hoverScale: 1.1
 --- !u!4 &2052227067
 Transform:

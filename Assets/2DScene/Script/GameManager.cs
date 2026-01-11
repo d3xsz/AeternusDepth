@@ -9,7 +9,6 @@ public class GameManager : MonoBehaviour
     public int score = 0;
     public AutoScrollCamera scrollCamera;
     public Transform player;
-    public CthulhuChase cthulhu;
 
     // TextMeshPro referansları
     public TextMeshProUGUI scoreText;
@@ -20,7 +19,6 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI finalScoreText;
     public float difficultyIncreaseInterval = 10f;
     public float cameraSpeedIncrease = 0.5f;
-    public float cthulhuSpeedIncrease = 0.3f;
 
     private bool isGameOver = false;
     private float difficultyTimer = 0f;
@@ -89,8 +87,6 @@ public class GameManager : MonoBehaviour
                 Debug.LogError("❌ Player tag'ine sahip GameObject bulunamadı!");
             }
         }
-
-        if (cthulhu == null) cthulhu = FindObjectOfType<CthulhuChase>();
     }
 
     void SetupEventListeners()
@@ -153,7 +149,7 @@ public class GameManager : MonoBehaviour
     {
         if (isGameOver) return;
 
-        // Zorluk artışı
+        // Zorluk artışı (sadece kamera hızı artacak)
         difficultyTimer += Time.deltaTime;
         if (difficultyTimer >= difficultyIncreaseInterval)
         {
@@ -340,7 +336,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (cthulhu != null) cthulhu.ResetCthulhuImmediately();
+        // Cthulhu yok artık, kaldırıldı
         if (scrollCamera != null) scrollCamera.InstantResetToPlayer();
 
         // Potları hemen respawn et
@@ -426,12 +422,6 @@ public class GameManager : MonoBehaviour
             scrollCamera.SetScrollSpeed(scrollCamera.GetCurrentSpeed() + cameraSpeedIncrease);
             Debug.Log($"📈 Zorluk arttı! Kamera hızı: {scrollCamera.GetCurrentSpeed():F2}");
         }
-
-        if (cthulhu != null)
-        {
-            cthulhu.SetChaseSpeed(cthulhu.chaseSpeed + cthulhuSpeedIncrease);
-            Debug.Log($"📈 Cthulhu hızı: {cthulhu.chaseSpeed:F2}");
-        }
     }
 
     public void AddScore(int points)
@@ -439,15 +429,6 @@ public class GameManager : MonoBehaviour
         score += points;
         UpdateUI();
         Debug.Log($"💰 Score eklendi: +{points}, Toplam: {score}");
-    }
-
-    public void PlayerHitByTentacle(float slowAmount, float slowDuration)
-    {
-        if (player != null)
-        {
-            PlayerSwimController swimController = player.GetComponent<PlayerSwimController>();
-            if (swimController != null) swimController.ApplySlow(slowAmount, slowDuration);
-        }
     }
 
     public void GameOver()

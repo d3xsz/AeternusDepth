@@ -16,41 +16,33 @@ public class PotItem : MonoBehaviour
     public float bobSpeed = 2f;
     public float bobHeight = 0.2f;
 
-    [Header("Hareket Ayarları")]
-    public float horizontalMoveSpeed = 1f;
-    public float moveDistance = 2f;
-    public float directionChangeInterval = 3f;
-
     [Header("Rotation Ayarları")]
     public float rotationAngle = 15f; // Sağa/sola dönüş açısı
     public float rotationSpeed = 5f; // Rotation hızı
     public bool smoothRotation = true; // Yumuşak geçiş
 
+    [Header("Scale Animasyon Ayarları")]
+    public float scaleAnimationSpeed = 2f; // Scale animasyon hızı
+    public float minScaleMultiplier = 0.8f; // Minimum scale çarpanı (kendi scale'inin yüzdesi)
+    public float maxScaleMultiplier = 1.2f; // Maximum scale çarpanı (kendi scale'inin yüzdesi)
+
     [Header("Efektler")]
     public GameObject collectEffectPrefab;
-
-    [Header("Deniz Anası Animasyonları")]
-    public Sprite[] idleFramesLeft;
-    public Sprite[] idleFramesRight;
-    public float frameDuration = 0.2f;
 
     private Vector3 startPosition;
     private bool isCollected = false;
     private Vector3 originalScale;
     private Quaternion originalRotation;
-    private int currentFrame = 0;
-    private float frameTimer = 0f;
-    private float directionTimer = 0f;
-    private bool isMovingRight = true;
-    private Vector3 movementStartPos;
+    private float rotationTimer = 0f;
+    private bool isRotatingRight = true;
     private Quaternion targetRotation;
     private Quaternion leftRotation;
     private Quaternion rightRotation;
+    private float scaleAnimationTimer = 0f;
 
     void Start()
     {
         startPosition = transform.position;
-        movementStartPos = startPosition;
         originalScale = transform.localScale;
         originalRotation = transform.rotation;
 
@@ -62,7 +54,7 @@ public class PotItem : MonoBehaviour
         rightRotation = Quaternion.Euler(0, 0, -rotationAngle);
 
         // Başlangıç rotation'ı
-        targetRotation = isMovingRight ? rightRotation : leftRotation;
+        targetRotation = isRotatingRight ? rightRotation : leftRotation;
         if (!smoothRotation)
         {
             transform.rotation = targetRotation;
@@ -70,9 +62,6 @@ public class PotItem : MonoBehaviour
 
         SetupPotType();
         gameObject.tag = "Pot";
-
-        // Başlangıç animasyonu
-        UpdateSprite();
     }
 
     void SetupPotType()
@@ -93,29 +82,17 @@ public class PotItem : MonoBehaviour
     {
         if (isCollected) return;
 
-        // Yön değiştirme kontrolü
-        directionTimer += Time.deltaTime;
-        if (directionTimer >= directionChangeInterval)
+        // Rotation yön değiştirme kontrolü
+        rotationTimer += Time.deltaTime;
+        if (rotationTimer >= 3f) // Her 3 saniyede bir yön değiştir
         {
-            ChangeDirection();
-            directionTimer = 0f;
-        }
-
-        // Yatay hareket
-        float horizontalMovement = isMovingRight ? horizontalMoveSpeed : -horizontalMoveSpeed;
-        transform.position += new Vector3(horizontalMovement * Time.deltaTime, 0, 0);
-
-        // Hareket sınırı kontrolü
-        float currentDistance = Mathf.Abs(transform.position.x - movementStartPos.x);
-        if (currentDistance >= moveDistance)
-        {
-            ChangeDirection();
-            movementStartPos = transform.position;
+            ChangeRotationDirection();
+            rotationTimer = 0f;
         }
 
         // Yukarı-aşağı sallanma efekti
         float bob = Mathf.Sin(Time.time * bobSpeed) * bobHeight;
-        transform.position = new Vector3(transform.position.x, startPosition.y + bob, transform.position.z);
+        transform.position = new Vector3(startPosition.x, startPosition.y + bob, startPosition.z);
 
         // Yumuşak rotation
         if (smoothRotation)
@@ -123,16 +100,16 @@ public class PotItem : MonoBehaviour
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
         }
 
-        // Animasyon güncelleme
-        UpdateAnimation();
+        // Scale animasyonu
+        UpdateScaleAnimation();
     }
 
-    void ChangeDirection()
+    void ChangeRotationDirection()
     {
-        isMovingRight = !isMovingRight;
+        isRotatingRight = !isRotatingRight;
 
         // Yöne göre target rotation'ı güncelle
-        targetRotation = isMovingRight ? rightRotation : leftRotation;
+        targetRotation = isRotatingRight ? rightRotation : leftRotation;
 
         // Yumuşak rotation kapalıysa anında uygula
         if (!smoothRotation)
@@ -140,50 +117,25 @@ public class PotItem : MonoBehaviour
             transform.rotation = targetRotation;
         }
 
-        // Frame sıfırlama
-        currentFrame = 0;
-        frameTimer = 0f;
-
-        // Sprite'ı güncelle
-        UpdateSprite();
+        // Scale animasyon timer'ını sıfırla
+        scaleAnimationTimer = 0f;
     }
 
-    void UpdateSprite()
-    {
-        if (spriteRenderer == null) return;
-
-        // Yöne göre doğru frame array'ini seç
-        Sprite[] currentFrames = isMovingRight ? idleFramesRight : idleFramesLeft;
-
-        if (currentFrames != null && currentFrames.Length > 0)
-        {
-            spriteRenderer.sprite = currentFrames[0];
-            spriteRenderer.flipX = false; // Rotation ile yön değiştiği için flip gerekmez
-        }
-    }
-
-    void UpdateAnimation()
+    void UpdateScaleAnimation()
     {
         if (isCollected) return;
 
-        // Yöne göre doğru frame array'ini seç
-        Sprite[] currentFrames = isMovingRight ? idleFramesRight : idleFramesLeft;
+        // Scale animasyon timer'ını güncelle
+        scaleAnimationTimer += Time.deltaTime * scaleAnimationSpeed;
 
-        if (currentFrames == null || currentFrames.Length == 0) return;
+        // Sinüs dalgası kullanarak scale değerini hesapla (0-1 arasında)
+        float scaleFactor = (Mathf.Sin(scaleAnimationTimer) + 1f) * 0.5f; // 0-1 arasına normalize et
 
-        // Frame güncelleme
-        frameTimer += Time.deltaTime;
+        // İki scale değeri arasında interpolasyon yap
+        float currentScaleMultiplier = Mathf.Lerp(minScaleMultiplier, maxScaleMultiplier, scaleFactor);
 
-        if (frameTimer >= frameDuration)
-        {
-            frameTimer = 0f;
-
-            // Sonraki frame'e geç
-            currentFrame = (currentFrame + 1) % currentFrames.Length;
-
-            // Sprite'ı güncelle (flip yapmıyoruz çünkü rotation ile yön değiştiriyoruz)
-            spriteRenderer.sprite = currentFrames[currentFrame];
-        }
+        // Yeni scale'i uygula
+        transform.localScale = originalScale * currentScaleMultiplier;
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -242,7 +194,7 @@ public class PotItem : MonoBehaviour
             float t = elapsedTime / duration;
 
             // Küçülme efekti
-            transform.localScale = Vector3.Lerp(originalScale, Vector3.zero, t);
+            transform.localScale = Vector3.Lerp(transform.localScale, Vector3.zero, t);
 
             // Ekstra dönme efekti
             transform.Rotate(0, 0, 720f * Time.deltaTime);
@@ -267,14 +219,12 @@ public class PotItem : MonoBehaviour
         transform.localScale = originalScale;
         transform.position = startPosition;
         transform.rotation = originalRotation;
-        movementStartPos = startPosition;
 
-        // Varsayılan yön
-        isMovingRight = true;
+        // Varsayılan rotation yönü
+        isRotatingRight = true;
         targetRotation = rightRotation;
-        directionTimer = 0f;
-        currentFrame = 0;
-        frameTimer = 0f;
+        rotationTimer = 0f;
+        scaleAnimationTimer = 0f;
 
         if (!smoothRotation)
         {
@@ -284,8 +234,6 @@ public class PotItem : MonoBehaviour
         if (spriteRenderer != null)
         {
             spriteRenderer.color = Color.white;
-            spriteRenderer.flipX = false;
-            UpdateSprite();
         }
     }
 
@@ -302,20 +250,6 @@ public class PotItem : MonoBehaviour
         Debug.Log($"⏱️ Deniz anası süreleri ayarlandı: Hız={speedDuration}s, Yavaş={poisonDuration}s");
     }
 
-    public void SetMovementSettings(float moveSpeed, float distance, float changeInterval)
-    {
-        horizontalMoveSpeed = moveSpeed;
-        moveDistance = distance;
-        directionChangeInterval = changeInterval;
-    }
-
-    public void SetAnimationFrames(Sprite[] framesLeft, Sprite[] framesRight)
-    {
-        idleFramesLeft = framesLeft;
-        idleFramesRight = framesRight;
-        UpdateSprite();
-    }
-
     // Rotation ayarlarını değiştirmek için
     public void SetRotationSettings(float angle, float speed, bool smooth)
     {
@@ -328,7 +262,25 @@ public class PotItem : MonoBehaviour
         rightRotation = Quaternion.Euler(0, 0, -rotationAngle);
 
         // Güncel target rotation'ı güncelle
-        targetRotation = isMovingRight ? rightRotation : leftRotation;
+        targetRotation = isRotatingRight ? rightRotation : leftRotation;
+    }
+
+    // Scale animasyon ayarlarını değiştirmek için
+    public void SetScaleAnimationSettings(float speed, float minScale, float maxScale)
+    {
+        scaleAnimationSpeed = speed;
+        minScaleMultiplier = minScale;
+        maxScaleMultiplier = maxScale;
+
+        // Orijinal scale'i kaydet
+        originalScale = transform.localScale;
+    }
+
+    // Bob hareketi ayarlarını değiştirmek için
+    public void SetBobSettings(float speed, float height)
+    {
+        bobSpeed = speed;
+        bobHeight = height;
     }
 
     // Pot tipini öğrenmek için public getter

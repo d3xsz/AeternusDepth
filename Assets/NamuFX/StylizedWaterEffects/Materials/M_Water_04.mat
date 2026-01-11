@@ -113,6 +113,7 @@ Material:
     - _DistortionStr: 0.08
     - _Distortion_Pow: 0.1
     - _DstBlend: 10
+    - _DstBlendAlpha: 10
     - _Edge: 0.45
     - _Edge_Dissolve_Value: 1
     - _Inner_Darken: 1
@@ -125,6 +126,7 @@ Material:
     - _Rotation: -90
     - _SoftParticleFactor: 0.2
     - _SrcBlend: 5
+    - _SrcBlendAlpha: 1
     - _Step_Amount: 1.15
     - _Surface: 1
     - _TextureOffset_X: 0

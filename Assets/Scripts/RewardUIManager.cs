@@ -19,6 +19,12 @@ public class RewardUIManager : MonoBehaviour
     [Header("Reward Settings")]
     public List<PlayerStats.RewardItem> rewardPool = new List<PlayerStats.RewardItem>();
 
+    [Header("Audio Settings")]
+    public AudioClip rewardSelectSound; // Reward seçildiğinde çalacak ses
+    public AudioClip rewardPanelOpenSound; // Panel açıldığında çalacak ses
+    [Range(0f, 1f)] public float soundVolume = 1f;
+
+    private AudioSource audioSource; // Ses çalmak için AudioSource
     private PlayerStats.RewardItem leftReward;
     private PlayerStats.RewardItem rightReward;
     private System.Action<PlayerStats.RewardItem> onRewardSelected;
@@ -40,12 +46,21 @@ public class RewardUIManager : MonoBehaviour
         if (leftButton == null) Debug.LogError("LeftButton reference is not connected!");
         if (rightButton == null) Debug.LogError("RightButton reference is not connected!");
 
+        // AudioSource component'i ekle veya bul
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.volume = soundVolume;
+        }
+
         escMenu = FindObjectOfType<ESCMenu>();
         if (escMenu == null) Debug.LogWarning("ESCMenu not found!");
 
         rewardPanel.SetActive(false);
-        leftButton.onClick.AddListener(() => SelectReward(leftReward));
-        rightButton.onClick.AddListener(() => SelectReward(rightReward));
+        leftButton.onClick.AddListener(() => SelectReward(leftReward, true));
+        rightButton.onClick.AddListener(() => SelectReward(rightReward, false));
     }
 
     void Update()
@@ -89,6 +104,12 @@ public class RewardUIManager : MonoBehaviour
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+
+        // Panel açılma sesini çal
+        if (rewardPanelOpenSound != null)
+        {
+            PlaySound(rewardPanelOpenSound);
+        }
 
         Debug.Log("🎁 Reward panel opened - Time stopped");
     }
@@ -163,12 +184,28 @@ public class RewardUIManager : MonoBehaviour
         }
     }
 
-    void SelectReward(PlayerStats.RewardItem selectedReward)
+    void SelectReward(PlayerStats.RewardItem selectedReward, bool isLeftButton)
     {
         if (selectedReward == null)
         {
             Debug.LogError("Selected reward is null!");
             return;
+        }
+
+        // Reward seçim sesini çal
+        if (rewardSelectSound != null)
+        {
+            PlaySound(rewardSelectSound);
+        }
+
+        // İsteğe bağlı: Butona tıklama animasyonu veya feedback
+        if (isLeftButton)
+        {
+            ButtonFeedback(leftButton);
+        }
+        else
+        {
+            ButtonFeedback(rightButton);
         }
 
         onRewardSelected?.Invoke(selectedReward);
@@ -193,6 +230,37 @@ public class RewardUIManager : MonoBehaviour
         Debug.Log("🎁 Reward panel closed - Time returned to normal");
     }
 
+    void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip, soundVolume);
+        }
+    }
+
+    void ButtonFeedback(Button button)
+    {
+        // İsteğe bağlı: Butona tıklandığında görsel feedback
+        // Örneğin: butonun rengini değiştir veya küçük bir animasyon
+        if (button != null)
+        {
+            // Basit bir scale animasyonu
+            StartCoroutine(ButtonClickAnimation(button.transform));
+        }
+    }
+
+    System.Collections.IEnumerator ButtonClickAnimation(Transform buttonTransform)
+    {
+        if (buttonTransform == null) yield break;
+
+        Vector3 originalScale = buttonTransform.localScale;
+        Vector3 targetScale = originalScale * 0.9f;
+
+        buttonTransform.localScale = targetScale;
+        yield return new WaitForSecondsRealtime(0.1f); // Realtime kullanıyoruz çünkü timeScale = 0
+        buttonTransform.localScale = originalScale;
+    }
+
     public void HideRewardPanel()
     {
         CloseRewardPanel();
@@ -201,5 +269,24 @@ public class RewardUIManager : MonoBehaviour
     public bool IsRewardPanelOpen()
     {
         return isRewardPanelOpen;
+    }
+
+    // Inspector'dan sesleri test etmek için
+    [ContextMenu("Test Reward Select Sound")]
+    public void TestRewardSelectSound()
+    {
+        if (rewardSelectSound != null)
+        {
+            PlaySound(rewardSelectSound);
+        }
+    }
+
+    [ContextMenu("Test Panel Open Sound")]
+    public void TestPanelOpenSound()
+    {
+        if (rewardPanelOpenSound != null)
+        {
+            PlaySound(rewardPanelOpenSound);
+        }
     }
 }

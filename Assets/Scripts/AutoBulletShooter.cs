@@ -65,6 +65,12 @@ public class AutoBulletShooter : MonoBehaviour
     {
         if (bulletPrefab == null || firePoint == null) return;
 
+        // ATEŞ SESİNİ ÇAL
+        if (weaponScript != null)
+        {
+            weaponScript.PlayShootSound();
+        }
+
         // BONUSLARI HESAPLA
         float damageMultiplier = PlayerStats.Instance?.GetDamageMultiplier() ?? 1f;
         float speedMultiplier = PlayerStats.Instance?.GetBulletSpeedMultiplier() ?? 1f;

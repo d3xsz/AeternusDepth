@@ -81,7 +81,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 1466813270, guid: 996da64bbbfe5784a93beb55068dc313, type: 3}
+  m_Sprite: {fileID: 1847026754, guid: 855fce0bcb2bda948b056ea41f7e5f26, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -147,15 +147,10 @@ MonoBehaviour:
   spriteRenderer: {fileID: 6415635441333014484}
   bobSpeed: 2
   bobHeight: 0.2
-  horizontalMoveSpeed: 2
-  moveDistance: 2
-  directionChangeInterval: 3
   rotationAngle: 15
   rotationSpeed: 10
   smoothRotation: 1
-  collectEffectPrefab: {fileID: 0}
-  idleFramesLeft:
-  - {fileID: -847856921, guid: 996da64bbbfe5784a93beb55068dc313, type: 3}
-  idleFramesRight:
-  - {fileID: -322615145, guid: 996da64bbbfe5784a93beb55068dc313, type: 3}
-  frameDuration: 0.2
+  scaleAnimationSpeed: 2
+  minScaleMultiplier: 0.8
+  maxScaleMultiplier: 1.2
+  collectEffectPrefab: {fileID: 3381772053132140057, guid: 673dd86dc0590e84a976de2f8dc35a63, type: 3}

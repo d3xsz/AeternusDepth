@@ -4,118 +4,79 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
-using System.Collections;
 
 public class ESCMenu : MonoBehaviour
 {
     [Header("UI References")]
-    public GameObject escMenuPanel;
+    public GameObject escMenuPanel;  // Canvas paneli
     public Transform rewardsContent;
     public GameObject rewardItemPrefab;
     public TextMeshProUGUI totalStatsText;
     public TextMeshProUGUI rewardsText;
 
     [Header("Hover UI Reference")]
-    public GameObject hoverEnergyUI; // Inspector'dan hover UI'ını sürükle
+    public GameObject hoverEnergyUI;
 
-    [Header("Settings")]
-    public KeyCode toggleKey = KeyCode.Escape;
-    public bool isMenuOpen = false;
+    [Header("Audio Settings")]
+    public AudioClip buttonClickSound;
+    public AudioClip menuAmbienceSound;
+    [Range(0f, 1f)] public float ambienceVolume = 0.5f;
+    [Range(0f, 1f)] public float buttonSoundVolume = 0.7f;
 
-    // Canvas reference
-    private Canvas escCanvas;
-    private GraphicRaycaster raycaster;
-
-    // Hover UI kaydı
+    private AudioSource audioSource;
     private bool wasHoverUIActive = true;
+
+    // Diğer scriptler için public özellikler
+    public bool isMenuOpen { get; private set; } = false;
 
     void Start()
     {
-        Debug.Log("🚀 ESCMenu Start executed");
+        // AudioSource oluştur
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        audioSource.loop = true;
+        audioSource.volume = ambienceVolume;
 
-        // Canvas ve raycaster'ı bul
-        escCanvas = escMenuPanel.GetComponentInParent<Canvas>();
-        if (escCanvas != null)
-        {
-            raycaster = escCanvas.GetComponent<GraphicRaycaster>();
-            if (raycaster == null)
-            {
-                raycaster = escCanvas.gameObject.AddComponent<GraphicRaycaster>();
-                Debug.Log("✅ GraphicRaycaster eklendi");
-            }
+        // Buton event'lerini ayarla
+        SetupButtons();
 
-            // Canvas'ı TimeScale'den bağımsız yap
-            escCanvas.pixelPerfect = false;
-        }
-
+        // ESC menüsünü başlangıçta kapat
         if (escMenuPanel != null)
-        {
             escMenuPanel.SetActive(false);
-            Debug.Log("✅ ESCMenu panel hidden at start");
-        }
-        else
-        {
-            Debug.LogError("❌ ESCMenu panel reference is empty!");
-        }
 
         // EventSystem kontrolü
         EnsureEventSystemExists();
+    }
 
-        // Raycast Target'ları düzelt
-        FixESCMenuRaycastTargets();
+    void SetupButtons()
+    {
+        // Tüm butonları bul ve click event'lerini ayarla
+        Button[] buttons = escMenuPanel.GetComponentsInChildren<Button>(true);
+        foreach (Button button in buttons)
+        {
+            // Buton adına göre fonksiyon ata
+            string buttonName = button.gameObject.name.ToLower();
+
+            if (buttonName.Contains("continue") || buttonName.Contains("resume"))
+                button.onClick.AddListener(ResumeGame);
+            else if (buttonName.Contains("main") || buttonName.Contains("menu"))
+                button.onClick.AddListener(MainMenu);
+            else if (buttonName.Contains("quit") || buttonName.Contains("exit"))
+                button.onClick.AddListener(QuitGame);
+
+            // Tüm butonlara click sesi ekle
+            button.onClick.AddListener(PlayButtonClickSound);
+        }
     }
 
     void EnsureEventSystemExists()
     {
         if (EventSystem.current == null)
         {
-            Debug.LogError("❌ NO EVENT SYSTEM! Creating one...");
             GameObject es = new GameObject("EventSystem");
             es.AddComponent<EventSystem>();
             es.AddComponent<StandaloneInputModule>();
         }
-    }
-
-    void FixESCMenuRaycastTargets()
-    {
-        if (escMenuPanel == null) return;
-
-        Debug.Log("🔧 Fixing ESC Menu Raycast Targets...");
-
-        // Tüm butonları bul
-        Button[] buttons = escMenuPanel.GetComponentsInChildren<Button>(true);
-        foreach (Button button in buttons)
-        {
-            // Buton'u etkinleştir
-            button.interactable = true;
-
-            // Buton Image'ının Raycast Target'ını aç
-            Image image = button.GetComponent<Image>();
-            if (image != null)
-            {
-                image.raycastTarget = true;
-                Debug.Log($"✅ Button Raycast Target açık: {button.gameObject.name}");
-            }
-
-            // Buton'un içindeki Text'lerin Raycast Target'ını kapat
-            TMPro.TextMeshProUGUI[] texts = button.GetComponentsInChildren<TMPro.TextMeshProUGUI>(true);
-            foreach (TMPro.TextMeshProUGUI text in texts)
-            {
-                text.raycastTarget = false;
-            }
-        }
-
-        // Diğer Image'ların Raycast Target'ını kapat
-        Image[] allImages = escMenuPanel.GetComponentsInChildren<Image>(true);
-        foreach (Image image in allImages)
-        {
-            if (image.GetComponent<Button>() == null)
-            {
-                image.raycastTarget = false;
-            }
-        }
-
-        Debug.Log("✅ ESC Menu Raycast Target'lar düzeltildi!");
     }
 
     void Update()
@@ -123,241 +84,206 @@ public class ESCMenu : MonoBehaviour
         // Reward panel açıksa ESC'yi engelle
         RewardUIManager rewardManager = FindObjectOfType<RewardUIManager>();
         if (rewardManager != null && rewardManager.IsRewardPanelOpen())
-        {
             return;
-        }
 
-        if (Input.GetKeyDown(toggleKey))
+        // ESC tuşu ile menüyü aç/kapat
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Debug.Log("⌨️ ESC key pressed");
-            ToggleMenu();
-        }
-    }
-
-    public void ToggleMenu()
-    {
-        Debug.Log("🔄 ToggleMenu called, previous state: " + isMenuOpen);
-        isMenuOpen = !isMenuOpen;
-
-        if (escMenuPanel != null)
-        {
-            escMenuPanel.SetActive(isMenuOpen);
-
-            if (isMenuOpen)
-            {
-                OpenESCMenu();
-            }
+            if (!isMenuOpen)
+                OpenMenu();
             else
-            {
-                CloseESCMenu();
-            }
-        }
-        else
-        {
-            Debug.LogError("❌ ESCMenu panel reference is empty!");
+                CloseMenu();
         }
     }
 
-    void OpenESCMenu()
+    void OpenMenu()
     {
-        Debug.Log("🟢 OPENING ESC MENU");
+        // Durumu güncelle
+        isMenuOpen = true;
 
-        // Hover UI'ını kaydet ve gizle
+        // Canvas'ı aç
+        escMenuPanel.SetActive(true);
+
+        // Ambience müziğini başlat
+        PlayAmbience();
+
+        // Hover UI'ı gizle
         if (hoverEnergyUI != null)
         {
             wasHoverUIActive = hoverEnergyUI.activeSelf;
             hoverEnergyUI.SetActive(false);
-            Debug.Log("✅ Hover Energy UI hidden");
         }
 
-        // PAUSE TIMER
+        // Timer'ı durdur
         if (GameTimer.Instance != null)
             GameTimer.Instance.PauseTimer();
 
-        // TimeScale'i değiştir (OYUN DURSUN)
+        // Oyunu durdur
         Time.timeScale = 0f;
 
-        // Input modülünü kontrol et
-        if (EventSystem.current != null)
-        {
-            StandaloneInputModule inputModule = EventSystem.current.GetComponent<StandaloneInputModule>();
-            if (inputModule != null)
-            {
-                // Input modülünü yeniden başlat
-                inputModule.enabled = false;
-                inputModule.enabled = true;
-            }
-
-            // Focus'u sıfırla
-            EventSystem.current.SetSelectedGameObject(null);
-
-            // İlk butonu seç
-            Button firstButton = escMenuPanel.GetComponentInChildren<Button>();
-            if (firstButton != null)
-            {
-                EventSystem.current.SetSelectedGameObject(firstButton.gameObject);
-                Debug.Log($"✅ Focus set to: {firstButton.gameObject.name}");
-            }
-        }
-
-        UpdateRewardsDisplay();
-
-        // Mouse'u göster
+        // Fareyi göster
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
-        // Butonları etkinleştir (1 frame sonra)
-        StartCoroutine(EnableButtonsAfterFrame());
-
-        Debug.Log("⏸️ Game paused, ESC Menu open");
+        // Rewards'ı güncelle
+        UpdateRewardsDisplay();
     }
 
-    IEnumerator EnableButtonsAfterFrame()
+    void CloseMenu()
     {
-        yield return null; // Bir frame bekle
+        // Durumu güncelle
+        isMenuOpen = false;
 
-        // Tüm butonları etkinleştir
-        Button[] buttons = escMenuPanel.GetComponentsInChildren<Button>();
-        foreach (Button button in buttons)
-        {
-            button.interactable = true;
-        }
+        // Ambience müziğini durdur
+        StopAmbience();
 
-        Debug.Log($"✅ All buttons enabled ({buttons.Length} buttons)");
-    }
+        // Canvas'ı kapat
+        escMenuPanel.SetActive(false);
 
-    void CloseESCMenu()
-    {
-        Debug.Log("🔴 CLOSING ESC MENU");
-
-        // Hover UI'ını geri göster
+        // Hover UI'ı geri getir
         if (hoverEnergyUI != null && wasHoverUIActive)
-        {
             hoverEnergyUI.SetActive(true);
-            Debug.Log("✅ Hover Energy UI restored");
-        }
 
-        // RESUME TIMER
+        // Timer'ı devam ettir
         if (GameTimer.Instance != null)
             GameTimer.Instance.ResumeTimer();
 
-        // TimeScale'i normale çevir
+        // Oyunu devam ettir
         Time.timeScale = 1f;
 
-        // Mouse'u gizle
+        // Fareyi gizle
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+    }
 
-        Debug.Log("▶️ Game resumed, ESC Menu closed");
+    // Diğer scriptler için public ToggleMenu metodu
+    public void ToggleMenu()
+    {
+        if (!isMenuOpen)
+            OpenMenu();
+        else
+            CloseMenu();
+    }
+
+    void PlayAmbience()
+    {
+        // Eğer müzik çalmıyorsa ve müzik dosyası varsa
+        if (!audioSource.isPlaying && menuAmbienceSound != null)
+        {
+            audioSource.clip = menuAmbienceSound;
+            audioSource.Play();
+        }
+    }
+
+    void StopAmbience()
+    {
+        // Müzik çalıyorsa durdur
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+            audioSource.clip = null;
+        }
     }
 
     void UpdateRewardsDisplay()
     {
-        Debug.Log("📊 UpdateRewardsDisplay called");
-
-        if (rewardsText != null)
+        if (rewardsText != null && PlayerStats.Instance != null)
         {
             rewardsText.text = "ACQUIRED UPGRADES\n\n";
+            List<string> rewards = PlayerStats.Instance.GetAllAcquiredRewards();
 
-            if (PlayerStats.Instance != null)
+            if (rewards.Count > 0)
             {
-                List<string> rewards = PlayerStats.Instance.GetAllAcquiredRewards();
-
-                if (rewards.Count > 0)
-                {
-                    foreach (string reward in rewards)
-                    {
-                        rewardsText.text += $"• {reward}\n\n";
-                    }
-                }
-                else
-                {
-                    rewardsText.text += "• No upgrades acquired yet\n";
-                }
+                foreach (string reward in rewards)
+                    rewardsText.text += $"• {reward}\n\n";
             }
             else
             {
-                rewardsText.text += "• PlayerStats not found\n";
+                rewardsText.text += "• No upgrades acquired yet\n";
             }
         }
 
-        if (totalStatsText != null)
-        {
-            if (PlayerStats.Instance != null)
-            {
-                totalStatsText.text = PlayerStats.Instance.GetTotalStatsSummary();
-            }
-            else
-            {
-                totalStatsText.text = "Loading statistics...";
-            }
-        }
-
-        Debug.Log("✅ Rewards display updated");
+        if (totalStatsText != null && PlayerStats.Instance != null)
+            totalStatsText.text = PlayerStats.Instance.GetTotalStatsSummary();
     }
 
     public void ResumeGame()
     {
-        Debug.Log("🔘 CONTINUE BUTTON CLICKED!");
-        ToggleMenu();
+        // Continue butonuna basıldığında menüyü kapat
+        CloseMenu();
     }
 
     public void MainMenu()
     {
-        Debug.Log("🔘 MAIN MENU BUTTON CLICKED!");
+        // Müziği durdur
+        StopAmbience();
 
-        // STOP TIMER
+        // Timer'ı durdur
         if (GameTimer.Instance != null)
             GameTimer.Instance.StopTimer();
 
-        // TimeScale'i normale çevir
+        // Oyunu devam ettir
         Time.timeScale = 1f;
 
-        // Hover UI'ı geri göster (scene değişeceği için)
+        // Hover UI'ı geri getir
         if (hoverEnergyUI != null)
-        {
             hoverEnergyUI.SetActive(true);
-        }
 
-        Debug.Log("⏰ Time returned to normal");
-
-        Debug.Log("🏠 Switching to main menu...");
+        // Main menu sahnesine geç
         SceneManager.LoadScene("MainMenu");
     }
 
     public void QuitGame()
     {
-        Debug.Log("🔘 QUIT BUTTON CLICKED!");
+        // Müziği durdur
+        StopAmbience();
 
-        // TimeScale'i normale çevir
+        // Oyunu devam ettir
         Time.timeScale = 1f;
-
-        Application.Quit();
 
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
 #endif
     }
 
-    // DEBUG: Inspector'dan butonları test et
-    public void TestAllButtons()
+    void PlayButtonClickSound()
     {
-        Debug.Log("🧪 TESTING ALL BUTTONS...");
-
-        Button[] buttons = escMenuPanel.GetComponentsInChildren<Button>(true);
-        foreach (Button button in buttons)
+        if (buttonClickSound != null)
         {
-            Debug.Log($"Button: {button.gameObject.name}");
-            Debug.Log($"  - Interactable: {button.interactable}");
-            Debug.Log($"  - Enabled: {button.enabled}");
-            Debug.Log($"  - Active: {button.gameObject.activeInHierarchy}");
+            // Geçici bir AudioSource oluştur (ana AudioSource'u etkilememek için)
+            AudioSource tempSource = gameObject.AddComponent<AudioSource>();
+            tempSource.playOnAwake = false;
+            tempSource.volume = buttonSoundVolume;
+            tempSource.PlayOneShot(buttonClickSound);
 
-            // Image kontrolü
-            Image image = button.GetComponent<Image>();
-            if (image != null)
-            {
-                Debug.Log($"  - Image Raycast Target: {image.raycastTarget}");
-            }
+            // Ses bittikten sonra temizle
+            Destroy(tempSource, buttonClickSound.length + 0.1f);
         }
+    }
+
+    // Canvas aktif/pasif olduğunda otomatik olarak müziği kontrol et
+    void OnEnable()
+    {
+        // Component enable olduğunda bir şey yapma
+    }
+
+    void OnDisable()
+    {
+        // Component disable olduğunda müziği durdur
+        StopAmbience();
+    }
+
+    void OnDestroy()
+    {
+        // Object destroy olduğunda müziği durdur
+        StopAmbience();
+    }
+
+    // Diğer scriptler için public metod
+    public bool IsMenuOpen()
+    {
+        return isMenuOpen;
     }
 }

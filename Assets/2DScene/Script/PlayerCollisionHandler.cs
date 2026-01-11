@@ -4,27 +4,15 @@ public class PlayerCollisionHandler : MonoBehaviour
 {
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Cthulhu"))
+        // Sadece Anchor veya diğer nesneler için çarpışma
+        // Cthulhu artık yok
+
+        if (other.CompareTag("Anchor"))
         {
-            Debug.Log("💀 Cthulhu'ya çarptın!");
+            // Anchor çarpışması
+            Debug.Log("⚓ Anchor'a çarptın!");
 
-            PlayerSwimController swimController = GetComponent<PlayerSwimController>();
-            if (swimController != null) swimController.ResetAllEffects();
-
-            PlayerRespawn respawn = GetComponent<PlayerRespawn>();
-            if (respawn != null)
-            {
-                respawn.StartGhostRespawn(transform.position);
-
-                CthulhuChase cthulhu = other.GetComponent<CthulhuChase>();
-                if (cthulhu != null) cthulhu.ResetCthulhuImmediately();
-
-                ClearAnchors();
-            }
-            else if (GameManager.Instance != null)
-            {
-                GameManager.Instance.PlayerDied();
-            }
+            // İstersen burada bir şey yapabilirsin
         }
     }
 

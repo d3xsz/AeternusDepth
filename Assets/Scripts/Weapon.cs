@@ -17,6 +17,12 @@ public class Weapon : MonoBehaviour
     public GameObject exclamationMark; // Ünlem işareti GameObject'i
     public float blinkSpeed = 0.5f; // Yanıp sönme hızı
 
+    [Header("Ses Ayarları")]
+    public AudioClip shootSound; // Ateş sesi
+    public AudioClip pickupSound; // Silah alma sesi
+    public AudioClip dropSound; // Silah bırakma sesi
+    public float shootVolume = 0.7f; // Ateş sesi seviyesi
+
     [Header("Debug")]
     public bool showDebug = true;
     public bool adjustMode = false;
@@ -35,6 +41,7 @@ public class Weapon : MonoBehaviour
     private AutoBulletShooter bulletShooter;
     private InteractableObject interactableObject;
     private bool isBlinking = false;
+    private AudioSource audioSource;
 
     void Start()
     {
@@ -44,6 +51,18 @@ public class Weapon : MonoBehaviour
         originalRotation = transform.localRotation;
 
         interactableObject = GetComponent<InteractableObject>();
+
+        // AudioSource bileşeni ekle veya bul
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.spatialBlend = 1.0f; // 3D ses
+            audioSource.rolloffMode = AudioRolloffMode.Logarithmic;
+            audioSource.maxDistance = 20f;
+            audioSource.minDistance = 1f;
+            if (showDebug) Debug.Log("✅ AudioSource bileşeni eklendi");
+        }
 
         // AutoBulletShooter'ı bul
         bulletShooter = GetComponent<AutoBulletShooter>();
@@ -155,6 +174,13 @@ public class Weapon : MonoBehaviour
             return;
         }
 
+        // Alma sesini çal
+        if (pickupSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(pickupSound);
+            if (showDebug) Debug.Log("🔊 Silah alma sesi çalındı");
+        }
+
         // InteractableObject'ı devre dışı bırak
         if (interactableObject != null)
         {
@@ -218,6 +244,13 @@ public class Weapon : MonoBehaviour
     public void DropWeapon()
     {
         if (!isEquipped) return;
+
+        // Bırakma sesini çal
+        if (dropSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(dropSound);
+            if (showDebug) Debug.Log("🔊 Silah bırakma sesi çalındı");
+        }
 
         transform.SetParent(originalParent);
         transform.localPosition = originalPosition;
@@ -326,6 +359,16 @@ public class Weapon : MonoBehaviour
         transform.localEulerAngles = boneRotation;
 
         Debug.Log($"Position: {bonePosition}, Rotation: {boneRotation}");
+    }
+
+    // Ateş sesi çalmak için public fonksiyon
+    public void PlayShootSound()
+    {
+        if (shootSound != null && audioSource != null && isEquipped)
+        {
+            audioSource.PlayOneShot(shootSound, shootVolume);
+            if (showDebug) Debug.Log("🔫 Ateş sesi çalındı");
+        }
     }
 
     void OnDrawGizmosSelected()

@@ -34,6 +34,10 @@ public class MermaidNPC : MonoBehaviour, IInteractable
     [SerializeField] private AudioClip talkSound;
     [SerializeField] private AudioClip revealSound;
 
+    [Header("Visual Effects")]
+    [SerializeField] private GameObject mermaidEffect;
+    [SerializeField] private float effectFadeTime = 1.5f;
+
     private bool isTalking = false;
     private bool canInteract = true;
     private bool hasRevealedRelics = false;
@@ -43,6 +47,14 @@ public class MermaidNPC : MonoBehaviour, IInteractable
     void Awake()
     {
         ForceDisableAllUI();
+    }
+
+    void Start()
+    {
+        if (mermaidEffect == null)
+        {
+            mermaidEffect = transform.Find("MermaidEffect")?.gameObject;
+        }
     }
 
     void ForceDisableAllUI()
@@ -174,20 +186,17 @@ public class MermaidNPC : MonoBehaviour, IInteractable
     {
         hasRevealedRelics = true;
 
-        // 1. ÖNCE SOL ÜSTTEKÝ RELIC UI'YI AÇ
         if (uiManager != null)
         {
             uiManager.ShowRelicUI();
         }
         else
         {
-            // Fallback: UI Manager'ý bul
             uiManager = FindObjectOfType<UIManager>();
             if (uiManager != null)
                 uiManager.ShowRelicUI();
         }
 
-        // 2. SONRA MERMAID'DEKÝ RELIC CONTAINER'I GÖSTER
         if (relicsContainer != null)
         {
             relicsContainer.SetActive(true);
@@ -256,6 +265,70 @@ public class MermaidNPC : MonoBehaviour, IInteractable
         }
     }
 
+    IEnumerator FadeOutEffect()
+    {
+        if (mermaidEffect == null) yield break;
+
+        ParticleSystem[] particleSystems = mermaidEffect.GetComponentsInChildren<ParticleSystem>();
+
+        // ParticleSystem'leri durdur
+        foreach (ParticleSystem ps in particleSystems)
+        {
+            if (ps.isPlaying)
+            {
+                ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            }
+        }
+
+        // Parçacýklarýn ölmesini bekle
+        float maxLifetime = 0f;
+        foreach (ParticleSystem ps in particleSystems)
+        {
+            if (ps.main.startLifetime.constant > maxLifetime)
+            {
+                maxLifetime = ps.main.startLifetime.constant;
+            }
+        }
+
+        yield return new WaitForSeconds(maxLifetime + 0.5f);
+
+        // Eðer Light component'i varsa, onu da fade-out yap
+        Light[] lights = mermaidEffect.GetComponentsInChildren<Light>();
+        float elapsedTime = 0f;
+
+        while (elapsedTime < effectFadeTime)
+        {
+            float progress = elapsedTime / effectFadeTime;
+
+            foreach (Light light in lights)
+            {
+                if (light != null)
+                {
+                    light.intensity = Mathf.Lerp(light.intensity, 0f, progress);
+                }
+            }
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Lights'ý kapat
+        foreach (Light light in lights)
+        {
+            if (light != null)
+            {
+                light.enabled = false;
+            }
+        }
+
+        // GameObject'i tamamen kapat
+        mermaidEffect.SetActive(false);
+
+        // Eðer tamamen yok etmek istiyorsan:
+        // Destroy(mermaidEffect);
+        // mermaidEffect = null;
+    }
+
     void Update()
     {
         if (isTalking && Input.GetKeyDown(KeyCode.Escape))
@@ -300,6 +373,12 @@ public class MermaidNPC : MonoBehaviour, IInteractable
         hasRevealedRelics = false;
 
         SetPlayerControl(true);
+
+        // Efekti fade-out yaparak kaldýr
+        if (mermaidEffect != null && mermaidEffect.activeSelf)
+        {
+            StartCoroutine(FadeOutEffect());
+        }
 
         StartCoroutine(InteractionCooldown());
     }

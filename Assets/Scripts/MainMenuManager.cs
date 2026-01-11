@@ -26,19 +26,23 @@ public class MainMenuManager : MonoBehaviour
     [Header("Audio")]
     public AudioClip buttonClickSound;
     public AudioClip buttonHoverSound;
+    public AudioClip menuMusic; // Menü müziği
+    public AudioClip creditsMusic; // Credits müziği (isteğe bağlı)
+    public float musicVolume = 0.5f;
+    public float sfxVolume = 0.7f;
     private AudioSource audioSource;
+    private AudioSource musicSource; // Müzik için ayrı AudioSource
 
     [Header("Button Effects")]
     public float hoverScale = 1.1f;
     private Dictionary<Button, Vector3> originalButtonScales = new Dictionary<Button, Vector3>();
     private bool isCreditsActive = false;
+    private bool isMusicPlaying = false;
 
     void Start()
     {
-        // Audio
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-            audioSource = gameObject.AddComponent<AudioSource>();
+        // AudioSource'ları ayarla
+        SetupAudio();
 
         // Buton ayarları
         if (startButton != null) startButton.onClick.AddListener(StartGame);
@@ -62,9 +66,30 @@ public class MainMenuManager : MonoBehaviour
             }
         }
 
+        // Menü müziğini başlat
+        PlayMenuMusic();
+
         // Fareyi göster
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+    }
+
+    void SetupAudio()
+    {
+        // SFX için AudioSource
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        audioSource.loop = false;
+
+        // Müzik için ayrı AudioSource
+        GameObject musicObject = new GameObject("MenuMusicSource");
+        musicObject.transform.SetParent(transform);
+        musicSource = musicObject.AddComponent<AudioSource>();
+        musicSource.playOnAwake = false;
+        musicSource.loop = true;
+        musicSource.volume = musicVolume;
     }
 
     void SetupButtonHoverEffects()
@@ -114,8 +139,7 @@ public class MainMenuManager : MonoBehaviour
         if (isEntering)
         {
             // Hover sesi
-            if (buttonHoverSound != null && audioSource != null)
-                audioSource.PlayOneShot(buttonHoverSound);
+            PlaySFX(buttonHoverSound);
 
             // Büyüt
             button.transform.localScale = originalButtonScales[button] * hoverScale;
@@ -127,15 +151,82 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
+    void PlaySFX(AudioClip clip)
+    {
+        if (clip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clip, sfxVolume);
+        }
+    }
+
+    void PlayMenuMusic()
+    {
+        if (menuMusic != null && musicSource != null && !isCreditsActive)
+        {
+            // Eğer zaten menü müziği çalıyorsa, yeniden başlatma
+            if (musicSource.isPlaying && musicSource.clip == menuMusic)
+                return;
+
+            musicSource.Stop();
+            musicSource.clip = menuMusic;
+            musicSource.volume = musicVolume;
+            musicSource.Play();
+            isMusicPlaying = true;
+
+            Debug.Log("🔊 Menu music started");
+        }
+    }
+
+    void PlayCreditsMusic()
+    {
+        if (creditsMusic != null && musicSource != null && isCreditsActive)
+        {
+            // Eğer zaten credits müziği çalıyorsa, yeniden başlatma
+            if (musicSource.isPlaying && musicSource.clip == creditsMusic)
+                return;
+
+            musicSource.Stop();
+            musicSource.clip = creditsMusic;
+            musicSource.volume = musicVolume * 0.7f; // Credits müziği biraz daha kısık
+            musicSource.Play();
+            isMusicPlaying = true;
+
+            Debug.Log("🔊 Credits music started");
+        }
+    }
+
+    void StopAllMusic()
+    {
+        if (musicSource != null && musicSource.isPlaying)
+        {
+            musicSource.Stop();
+            isMusicPlaying = false;
+            Debug.Log("🔇 All music stopped");
+        }
+    }
+
     void PlayClickSound()
     {
-        if (buttonClickSound != null && audioSource != null)
-            audioSource.PlayOneShot(buttonClickSound);
+        PlaySFX(buttonClickSound);
     }
 
     public void StartGame()
     {
         Debug.Log("Oyun başlatılıyor...");
+
+        // Müziği durdur
+        StopAllMusic();
+
+        // Tıklama sesi
+        PlaySFX(buttonClickSound);
+
+        // Küçük bekleme (sesin çalınması için)
+        StartCoroutine(LoadGameSceneWithDelay(0.3f));
+    }
+
+    IEnumerator LoadGameSceneWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
 
         if (!string.IsNullOrEmpty(gameSceneName))
             SceneManager.LoadScene(gameSceneName);
@@ -144,6 +235,7 @@ public class MainMenuManager : MonoBehaviour
     public void OpenSettings()
     {
         Debug.Log("Ayarlar açılıyor...");
+        PlaySFX(buttonClickSound);
         // Settings panelini buraya ekleyebilirsin
     }
 
@@ -152,12 +244,17 @@ public class MainMenuManager : MonoBehaviour
         if (isCreditsActive) return;
 
         Debug.Log("Credits açılıyor...");
+        PlaySFX(buttonClickSound);
+
+        isCreditsActive = true;
+
+        // Credits müziğini başlat
+        PlayCreditsMusic();
 
         // Credits panelini aç
         if (creditsPanel != null)
         {
             creditsPanel.SetActive(true);
-            isCreditsActive = true;
 
             // Credits text'i en alta al
             if (creditsText != null)
@@ -212,24 +309,40 @@ public class MainMenuManager : MonoBehaviour
         if (!isCreditsActive) return;
 
         Debug.Log("Credits kapatılıyor...");
+        PlaySFX(buttonClickSound);
 
         isCreditsActive = false;
 
         if (creditsPanel != null)
             creditsPanel.SetActive(false);
 
-        // Tüm coroutine'leri durdur
+        // Menü müziğini başlat
+        PlayMenuMusic();
+
+        // Credits ile ilgili coroutine'leri durdur
         StopAllCoroutines();
     }
 
     public void ExitGame()
     {
         Debug.Log("Oyun kapatılıyor...");
+        PlaySFX(buttonClickSound);
+
+        // Müziği durdur
+        StopAllMusic();
+
+        // Küçük bekleme
+        StartCoroutine(QuitWithDelay(0.3f));
+    }
+
+    IEnumerator QuitWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
 
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-            Application.Quit();
+        Application.Quit();
 #endif
     }
 
@@ -238,5 +351,70 @@ public class MainMenuManager : MonoBehaviour
         // ESC ile credits'i kapat
         if (isCreditsActive && Input.GetKeyDown(KeyCode.Escape))
             CloseCredits();
+
+        // Müzik ayarlarını kontrol et (debug için)
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            if (musicSource.isPlaying)
+            {
+                StopAllMusic();
+            }
+            else
+            {
+                if (isCreditsActive)
+                    PlayCreditsMusic();
+                else
+                    PlayMenuMusic();
+            }
+        }
+
+        // Ses seviyesi ayarları (debug için)
+        if (Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus))
+        {
+            musicVolume = Mathf.Clamp01(musicVolume + 0.1f);
+            if (musicSource != null)
+            {
+                // Credits müziğinde farklı volume kullanıyoruz
+                if (isCreditsActive && musicSource.clip == creditsMusic)
+                    musicSource.volume = musicVolume * 0.7f;
+                else
+                    musicSource.volume = musicVolume;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Minus) || Input.GetKeyDown(KeyCode.KeypadMinus))
+        {
+            musicVolume = Mathf.Clamp01(musicVolume - 0.1f);
+            if (musicSource != null)
+            {
+                // Credits müziğinde farklı volume kullanıyoruz
+                if (isCreditsActive && musicSource.clip == creditsMusic)
+                    musicSource.volume = musicVolume * 0.7f;
+                else
+                    musicSource.volume = musicVolume;
+            }
+        }
     }
+
+    // Public method'lar ses ayarları için
+    public void SetMusicVolume(float volume)
+    {
+        musicVolume = Mathf.Clamp01(volume);
+        if (musicSource != null)
+        {
+            // Credits müziğinde farklı volume kullanıyoruz
+            if (isCreditsActive && musicSource.clip == creditsMusic)
+                musicSource.volume = musicVolume * 0.7f;
+            else
+                musicSource.volume = musicVolume;
+        }
+    }
+
+    public void SetSFXVolume(float volume)
+    {
+        sfxVolume = Mathf.Clamp01(volume);
+    }
+
+    public float GetMusicVolume() => musicVolume;
+    public float GetSFXVolume() => sfxVolume;
 }
